@@ -1,0 +1,11 @@
+{
+ id:string
+
+ name:string
+
+ minGrade:number
+
+ maxGrade:number
+
+ contribution:number
+}
