@@ -1,6 +1,9 @@
 import type { Device, GradeBand, GradeLookupTable, TerminationRule } from '../types';
 
-const DEVICES_URL = '/data/devices.json';
+// Devices now come from a Vercel serverless function (/api/devices) that
+// fetches + parses the live Google Sheet server-side, instead of a static
+// JSON file. See /api/devices.ts for the actual fetch + CSV parsing logic.
+const DEVICES_URL = '/api/devices';
 const GRADE_BANDS_URL = '/data/gradeBands.json';
 const TERMINATION_RULES_URL = '/data/terminationRules.json';
 const GRADE_LOOKUP_URL = '/data/gradeLookup.json';
