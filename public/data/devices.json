@@ -1,0 +1,50 @@
+[
+  {
+    "id": "iphone-15",
+    "manufacturer": "Apple",
+    "model": "iPhone 15",
+    "memoryGb": 128,
+    "leaseMonthly": 117.5,
+    "buyoutEnd": 2190,
+    "weightedListPrice": 3499,
+    "priceTier": "premium",
+    "updatedAt": "2026-06-01",
+    "notes": "Replace with the real Google Sheet export."
+  },
+  {
+    "id": "s24",
+    "manufacturer": "Samsung",
+    "model": "Galaxy S24",
+    "memoryGb": 256,
+    "leaseMonthly": 102.9,
+    "buyoutEnd": 1990,
+    "weightedListPrice": 3290,
+    "priceTier": "premium",
+    "updatedAt": "2026-06-01",
+    "notes": "Sample data"
+  },
+  {
+    "id": "pixel-9",
+    "manufacturer": "Google",
+    "model": "Pixel 9",
+    "memoryGb": 128,
+    "leaseMonthly": 88.4,
+    "buyoutEnd": 1590,
+    "weightedListPrice": 2790,
+    "priceTier": "mid",
+    "updatedAt": "2026-06-01",
+    "notes": "Sample data"
+  },
+  {
+    "id": "a55",
+    "manufacturer": "Samsung",
+    "model": "Galaxy A55",
+    "memoryGb": 128,
+    "leaseMonthly": 58.2,
+    "buyoutEnd": 990,
+    "weightedListPrice": 1690,
+    "priceTier": "mid",
+    "updatedAt": "2026-06-01",
+    "notes": "Sample data"
+  }
+]

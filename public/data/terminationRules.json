@@ -1,0 +1,12 @@
+[
+  {
+    "scenario": "early_exit",
+    "description": "Early termination cost simulation",
+    "formula": "weightedListPrice - paid_months * employee_monthly"
+  },
+  {
+    "scenario": "end_of_lease",
+    "description": "End-of-lease buyout",
+    "formula": "buyoutEnd"
+  }
+]

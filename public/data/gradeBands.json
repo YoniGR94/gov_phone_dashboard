@@ -1,0 +1,36 @@
+[
+  {
+    "id": "senior-a",
+    "label": "Senior A",
+    "range": "42+",
+    "minGrade": 42,
+    "maxGrade": 99,
+    "employeeContribution": 177,
+    "notes": "Example band"
+  },
+  {
+    "id": "senior-b",
+    "label": "Senior B",
+    "range": "40-41",
+    "minGrade": 40,
+    "maxGrade": 41,
+    "employeeContribution": 118,
+    "notes": "Example band"
+  },
+  {
+    "id": "middle",
+    "label": "Middle",
+    "range": "39 and below",
+    "minGrade": 27,
+    "maxGrade": 39,
+    "employeeContribution": 88.5,
+    "notes": "Example band"
+  },
+  {
+    "id": "only-sim",
+    "label": "ONLY SIM",
+    "range": "No device",
+    "employeeContribution": 11.06,
+    "notes": "Service only"
+  }
+]
