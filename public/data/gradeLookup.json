@@ -1,0 +1,356 @@
+{
+  "מינהלי": [
+    {
+      "rank": "25",
+      "bandId": "seniorA"
+    },
+    {
+      "rank": "24",
+      "bandId": "seniorB"
+    },
+    {
+      "rank": "23",
+      "bandId": "seniorB"
+    },
+    {
+      "rank": "22",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "21",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "20",
+      "bandId": "merav"
+    },
+    {
+      "rank": "19",
+      "bandId": "merav"
+    },
+    {
+      "rank": "18",
+      "bandId": "mased"
+    },
+    {
+      "rank": "17",
+      "bandId": "mased"
+    },
+    {
+      "rank": "16",
+      "bandId": "mased"
+    },
+    {
+      "rank": "15",
+      "bandId": "mased"
+    },
+    {
+      "rank": "14",
+      "bandId": "mased"
+    },
+    {
+      "rank": "13",
+      "bandId": "mased"
+    }
+  ],
+  "מח\"ר / מהנדסים": [
+    {
+      "rank": "46",
+      "bandId": "seniorA"
+    },
+    {
+      "rank": "45",
+      "bandId": "seniorB"
+    },
+    {
+      "rank": "44",
+      "bandId": "seniorB"
+    },
+    {
+      "rank": "43",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "42",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "41",
+      "bandId": "merav"
+    },
+    {
+      "rank": "40",
+      "bandId": "merav"
+    },
+    {
+      "rank": "39",
+      "bandId": "mased"
+    },
+    {
+      "rank": "38",
+      "bandId": "mased"
+    },
+    {
+      "rank": "37",
+      "bandId": "mased"
+    },
+    {
+      "rank": "36",
+      "bandId": "mased"
+    },
+    {
+      "rank": "35",
+      "bandId": "mased"
+    },
+    {
+      "rank": "34",
+      "bandId": "mased"
+    }
+  ],
+  "הנדסאים / טכנאים": [
+    {
+      "rank": "46",
+      "bandId": "seniorA"
+    },
+    {
+      "rank": "45",
+      "bandId": "seniorB"
+    },
+    {
+      "rank": "44",
+      "bandId": "seniorB"
+    },
+    {
+      "rank": "43",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "42",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "41",
+      "bandId": "merav"
+    },
+    {
+      "rank": "40",
+      "bandId": "merav"
+    },
+    {
+      "rank": "39",
+      "bandId": "mased"
+    },
+    {
+      "rank": "38",
+      "bandId": "mased"
+    },
+    {
+      "rank": "37",
+      "bandId": "mased"
+    },
+    {
+      "rank": "36",
+      "bandId": "mased"
+    },
+    {
+      "rank": "35",
+      "bandId": "mased"
+    },
+    {
+      "rank": "34",
+      "bandId": "mased"
+    }
+  ],
+  "צהל": [
+    {
+      "rank": "אלוף",
+      "bandId": "seniorA"
+    },
+    {
+      "rank": "תת אלוף",
+      "bandId": "seniorB"
+    },
+    {
+      "rank": "אלוף משנה",
+      "bandId": "seniorB"
+    },
+    {
+      "rank": "סגן אלוף",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "רב סרן",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "רב נגד",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "סרן",
+      "bandId": "merav"
+    },
+    {
+      "rank": "רב סמל בכיר",
+      "bandId": "merav"
+    }
+  ],
+  "משטרה": [
+    {
+      "rank": "ניצב",
+      "bandId": "seniorA"
+    },
+    {
+      "rank": "תת ניצב",
+      "bandId": "seniorB"
+    },
+    {
+      "rank": "ניצב משנה",
+      "bandId": "seniorB"
+    },
+    {
+      "rank": "סגן ניצב",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "רב פקד",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "פקד",
+      "bandId": "merav"
+    }
+  ],
+  "שב\"ס": [
+    {
+      "rank": "גונדר",
+      "bandId": "seniorA"
+    },
+    {
+      "rank": "גונדר משנה",
+      "bandId": "seniorB"
+    },
+    {
+      "rank": "תת גונדר",
+      "bandId": "seniorB"
+    },
+    {
+      "rank": "סגן גונדר",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "רב כלאי",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "כלאי",
+      "bandId": "merav"
+    }
+  ],
+  "כב\"א": [
+    {
+      "rank": "טפסר",
+      "bandId": "seniorA"
+    },
+    {
+      "rank": "תת טפסר",
+      "bandId": "seniorB"
+    },
+    {
+      "rank": "טפסר משנה",
+      "bandId": "seniorB"
+    },
+    {
+      "rank": "סגן טפסר",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "רב רשף",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "רשף",
+      "bandId": "merav"
+    }
+  ],
+  "משפטנים": [
+    {
+      "rank": "6א",
+      "bandId": "seniorB"
+    },
+    {
+      "rank": "7א",
+      "bandId": "seniorB"
+    },
+    {
+      "rank": "5א",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "4א",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "3א",
+      "bandId": "merav"
+    },
+    {
+      "rank": "2א",
+      "bandId": "merav"
+    },
+    {
+      "rank": "1א",
+      "bandId": "mased"
+    },
+    {
+      "rank": "א",
+      "bandId": "mased"
+    },
+    {
+      "rank": "ב2",
+      "bandId": "mased"
+    },
+    {
+      "rank": "ב1",
+      "bandId": "mased"
+    },
+    {
+      "rank": "ב",
+      "bandId": "mased"
+    }
+  ],
+  "עובדים סוציאליים (כולל בריאות ובתיה\"ח)": [
+    {
+      "rank": "רמת ניהול 7",
+      "bandId": "seniorB"
+    },
+    {
+      "rank": "רמת ניהול 6",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "רמת ניהול 5",
+      "bandId": "highschool"
+    },
+    {
+      "rank": "רמת ניהול 4",
+      "bandId": "merav"
+    },
+    {
+      "rank": "רמת ניהול 3",
+      "bandId": "merav"
+    },
+    {
+      "rank": "מדר\"צ",
+      "bandId": "mased"
+    },
+    {
+      "rank": "ללא ניהול",
+      "bandId": "mased"
+    },
+    {
+      "rank": "מרכז נושא",
+      "bandId": "mased"
+    }
+  ]
+}

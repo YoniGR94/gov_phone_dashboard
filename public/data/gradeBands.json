@@ -1,36 +1,7 @@
 [
-  {
-    "id": "senior-a",
-    "label": "Senior A",
-    "range": "42+",
-    "minGrade": 42,
-    "maxGrade": 99,
-    "employeeContribution": 177,
-    "notes": "Example band"
-  },
-  {
-    "id": "senior-b",
-    "label": "Senior B",
-    "range": "40-41",
-    "minGrade": 40,
-    "maxGrade": 41,
-    "employeeContribution": 118,
-    "notes": "Example band"
-  },
-  {
-    "id": "middle",
-    "label": "Middle",
-    "range": "39 and below",
-    "minGrade": 27,
-    "maxGrade": 39,
-    "employeeContribution": 88.5,
-    "notes": "Example band"
-  },
-  {
-    "id": "only-sim",
-    "label": "ONLY SIM",
-    "range": "No device",
-    "employeeContribution": 11.06,
-    "notes": "Service only"
-  }
+  { "id": "seniorA", "label": "בכיר א", "employeeContribution": 236 },
+  { "id": "seniorB", "label": "בכיר ב", "employeeContribution": 177 },
+  { "id": "highschool", "label": "תיכון", "employeeContribution": 118 },
+  { "id": "merav", "label": "מירב", "employeeContribution": 88.5 },
+  { "id": "mased", "label": "מסד", "employeeContribution": 88.5 }
 ]

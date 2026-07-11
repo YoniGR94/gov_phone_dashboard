@@ -2,16 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 
 import SelectionPage from './pages/SelectionPage';
 import DashboardPage from './pages/DashboardPage';
-import type { DashboardSelection, Device, GradeBand, GradeType, TerminationRule } from './types';
-import { loadDevices, loadGradeBands, loadMappings, loadTerminationRules } from './services/data';
+import type { DashboardSelection, Device, GradeBand, GradeLookupTable, GradeType } from './types';
+import { loadDevices, loadGradeBands, loadGradeLookup, loadTerminationRules } from './services/data';
 import { resolveGradeBand } from './services/calculations';
-
-const gradeTypes: GradeType[] = ['מח"ר', 'מנהלי', 'אחר'];
-const ranks = Array.from({ length: 16 }, (_, i) => `${27 + i}`);
 
 const defaultSelection: DashboardSelection = {
   selectedDeviceId: '',
-  selectedGradeType: 'מח"ר',
+  selectedGradeType: 'מח"ר / מהנדסים',
   selectedRank: '42',
   selectedMonth: 12,
 };
@@ -20,8 +17,7 @@ export default function App() {
   const [page, setPage] = useState<'selection' | 'dashboard'>('selection');
   const [devices, setDevices] = useState<Device[]>([]);
   const [gradeBands, setGradeBands] = useState<GradeBand[]>([]);
-  const [mappings, setMappings] = useState<Record<string, string>>({});
-  const [rules, setRules] = useState<TerminationRule[]>([]);
+  const [gradeLookup, setGradeLookup] = useState<GradeLookupTable>({});
   const [loading, setLoading] = useState(true);
   const [selection, setSelection] = useState<DashboardSelection>(defaultSelection);
 
@@ -30,10 +26,10 @@ export default function App() {
 
     async function init() {
       try {
-        const [devicesData, bandsData, mappingsData, rulesData] = await Promise.all([
+        const [devicesData, bandsData, lookupData] = await Promise.all([
           loadDevices(),
           loadGradeBands(),
-          loadMappings(),
+          loadGradeLookup(),
           loadTerminationRules(),
         ]);
 
@@ -41,8 +37,7 @@ export default function App() {
 
         setDevices(devicesData);
         setGradeBands(bandsData);
-        setMappings(mappingsData);
-        setRules(rulesData);
+        setGradeLookup(lookupData);
         setSelection((current) => ({
           ...current,
           selectedDeviceId: devicesData[0]?.id ?? '',
@@ -61,15 +56,35 @@ export default function App() {
     };
   }, []);
 
+  // Grade types come from the lookup table itself, not a hardcoded list -
+  // if you add a new track to gradeLookup.json, it shows up automatically.
+  const gradeTypes = useMemo(() => Object.keys(gradeLookup) as GradeType[], [gradeLookup]);
+
+  // Each grade type has its own rank scale, so the rank dropdown depends on
+  // whichever grade type is currently selected.
+  const ranks = useMemo(
+    () => (gradeLookup[selection.selectedGradeType] ?? []).map((entry) => entry.rank),
+    [gradeLookup, selection.selectedGradeType]
+  );
+
+  // If the grade type changes and the currently selected rank doesn't exist
+  // for the new type, snap to the first valid rank for that type instead of
+  // silently keeping an invalid selection.
+  useEffect(() => {
+    if (ranks.length > 0 && !ranks.includes(selection.selectedRank)) {
+      setSelection((current) => ({ ...current, selectedRank: ranks[0] }));
+    }
+  }, [ranks, selection.selectedRank]);
+
   const selectedDevice = useMemo(
     () => devices.find((device) => device.id === selection.selectedDeviceId) ?? devices[0],
     [devices, selection.selectedDeviceId]
   );
 
-  const selectedBand = useMemo(() => {
-    const rank = Number(selection.selectedRank);
-    return resolveGradeBand(rank, selection.selectedGradeType, gradeBands, mappings);
-  }, [gradeBands, mappings, selection.selectedGradeType, selection.selectedRank]);
+  const selectedBand = useMemo(
+    () => resolveGradeBand(selection.selectedRank, selection.selectedGradeType, gradeBands, gradeLookup),
+    [gradeBands, gradeLookup, selection.selectedGradeType, selection.selectedRank]
+  );
 
   const canContinue = Boolean(selectedDevice && selectedBand);
 
