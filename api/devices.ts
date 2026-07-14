@@ -38,20 +38,35 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
     const csvText = await sheetResponse.text();
 
-    const { data, errors } = Papa.parse<Record<string, string>>(csvText, {
-      header: true,
-      skipEmptyLines: true,
-      // Normalize header whitespace - the sheet's real headers contain
-      // irregular double/triple spaces (e.g. "כולל    מע\"מ"), so match on
-      // a cleaned-up version rather than the exact raw string.
-      transformHeader: (header) => header.trim().replace(/\s+/g, ' '),
+    // The sheet has TWO header rows: row 1 is a merged group title
+    // ("עלויות דגמי מכשיר ליסינג" etc, mostly empty cells), and the real
+    // column names (יצרן, דגם מכשיר, ...) live in row 2. Parsing with
+    // `header: true` would wrongly treat row 1 as the header row, so we
+    // parse as raw arrays instead and pick out row index 1 as the header.
+    const { data: rows, errors } = Papa.parse<string[]>(csvText, {
+      skipEmptyLines: 'greedy',
     });
 
     if (errors.length > 0) {
       console.error('CSV parse warnings:', errors);
     }
 
-    const devices = data
+    if (rows.length < 3) {
+      throw new Error('Sheet returned fewer rows than expected - layout may have changed');
+    }
+
+    const headerRow = rows[1].map((header) => header.trim().replace(/\s+/g, ' '));
+    const dataRows = rows.slice(2);
+
+    const records = dataRows.map((row) => {
+      const record: Record<string, string> = {};
+      headerRow.forEach((key, idx) => {
+        record[key] = row[idx] ?? '';
+      });
+      return record;
+    });
+
+    const devices = records
       .filter((row) => row['יצרן'] && row['דגם מכשיר'])
       .filter((row) => (row['הערות'] ?? '').trim() !== EXCLUDED_NOTE)
       .map((row) => {
