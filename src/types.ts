@@ -48,12 +48,6 @@ export type GradeLookupEntry = {
 // public/data/gradeLookup.json shape: GradeType -> ordered list of rank/band rows.
 export type GradeLookupTable = Record<string, GradeLookupEntry[]>;
 
-export type TerminationRule = {
-  scenario: string;
-  description: string;
-  formula: string;
-};
-
 export type ChartPoint = {
   month: number;
   employeeMonthly: number;

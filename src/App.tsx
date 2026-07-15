@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import SelectionPage from './pages/SelectionPage';
 import DashboardPage from './pages/DashboardPage';
 import type { DashboardSelection, Device, GradeBand, GradeLookupTable, GradeType } from './types';
-import { loadDevices, loadGradeBands, loadGradeLookup, loadTerminationRules } from './services/data';
+import { loadDevices, loadGradeBands, loadGradeLookup } from './services/data';
 import { resolveGradeBand } from './services/calculations';
 
 const defaultSelection: DashboardSelection = {
@@ -19,6 +19,7 @@ export default function App() {
   const [gradeBands, setGradeBands] = useState<GradeBand[]>([]);
   const [gradeLookup, setGradeLookup] = useState<GradeLookupTable>({});
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [selection, setSelection] = useState<DashboardSelection>(defaultSelection);
 
   useEffect(() => {
@@ -30,7 +31,6 @@ export default function App() {
           loadDevices(),
           loadGradeBands(),
           loadGradeLookup(),
-          loadTerminationRules(),
         ]);
 
         if (!active) return;
@@ -44,6 +44,7 @@ export default function App() {
         }));
       } catch (error) {
         console.error(error);
+        if (active) setLoadError(true);
       } finally {
         if (active) setLoading(false);
       }
@@ -97,7 +98,7 @@ export default function App() {
         selectedRank={selection.selectedRank}
         gradeTypes={gradeTypes}
         ranks={ranks}
-        bandLabel={selectedBand?.label ?? 'Loading...'}
+        bandLabel={selectedBand?.label ?? '\u2013'}
         bandContribution={selectedBand?.employeeContribution ?? 0}
         onDeviceChange={(value) => setSelection((current) => ({ ...current, selectedDeviceId: value }))}
         onGradeTypeChange={(value) => setSelection((current) => ({ ...current, selectedGradeType: value }))}
@@ -105,14 +106,23 @@ export default function App() {
         onContinue={() => setPage('dashboard')}
         canContinue={canContinue}
         loading={loading}
+        loadError={loadError}
       />
     );
   }
 
   if (!selectedDevice || !selectedBand) {
     return (
-      <div className="min-h-screen p-6">
-        <p>Missing data.</p>
+      <div className="glass-app-bg flex min-h-screen items-center justify-center p-6">
+        <div className="glass-panel max-w-sm p-8 text-center">
+          <p className="text-lg font-semibold text-slate-900">חסרים נתונים להצגת הלוח</p>
+          <p className="mt-2 text-sm text-slate-600">
+            ייתכן שהבחירה הקודמת אינה תקפה יותר. חזרו למסך הבחירה ונסו שוב.
+          </p>
+          <button type="button" onClick={() => setPage('selection')} className="glass-button-primary mt-6 w-full">
+            חזרה לבחירה
+          </button>
+        </div>
       </div>
     );
   }

@@ -6,17 +6,75 @@
   color-scheme: light;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
 }
 
 body {
   margin: 0;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #f8fafc;
+  min-height: 100%;
   color: #0f172a;
+  background-color: #f3f2fb;
+  background-image:
+    radial-gradient(38rem 30rem at 8% -6%, rgba(129, 140, 248, 0.35), transparent 60%),
+    radial-gradient(34rem 30rem at 96% 8%, rgba(52, 211, 153, 0.28), transparent 60%),
+    radial-gradient(30rem 26rem at 82% 96%, rgba(251, 113, 133, 0.22), transparent 60%),
+    radial-gradient(30rem 26rem at 4% 96%, rgba(167, 139, 250, 0.28), transparent 60%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
 * {
   box-sizing: border-box;
+}
+
+@layer components {
+  /* Large frosted-glass surface: main page panels. */
+  .glass-panel {
+    position: relative;
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    box-shadow: 0 20px 50px -20px rgba(30, 27, 75, 0.35);
+  }
+  .glass-panel::before {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 45%);
+  }
+
+  /* Smaller frosted card: metric cards, chart panels, device cards. */
+  .glass-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 12px 30px -14px rgba(30, 27, 75, 0.3);
+  }
+
+  .glass-pill {
+    @apply inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/50 px-4 py-1.5 text-sm font-medium text-slate-700 shadow-sm backdrop-blur-xl;
+  }
+
+  .glass-button-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-indigo-500 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_14px_28px_-10px_rgba(79,70,229,0.65)] ring-1 ring-inset ring-white/25 transition hover:from-indigo-400 hover:to-indigo-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .glass-button-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-white/60 bg-white/50 px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm backdrop-blur-xl transition hover:bg-white/70 active:scale-[0.98];
+  }
+
+  .glass-select {
+    @apply w-full appearance-none rounded-2xl border border-white/70 bg-white/60 px-3 py-2.5 text-sm text-slate-900 shadow-inner outline-none backdrop-blur-xl transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-300/50;
+  }
 }

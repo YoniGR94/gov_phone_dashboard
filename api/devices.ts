@@ -17,10 +17,29 @@ const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export
 
 const EXCLUDED_NOTE = 'הוצא מרשימת הדגמים לבחירה';
 
-function parseShekel(value: string): number {
-  const cleaned = value.replace(/[₪,]/g, '').trim();
+/**
+ * Parses a shekel-formatted cell ("₪1,234", "1234", etc).
+ * Returns null (not 0!) when the value is missing or unparseable, so the
+ * caller can drop the row instead of silently showing a device that costs
+ * "₪0" because someone fat-fingered a cell in the sheet.
+ */
+function parseShekel(value: string | undefined): number | null {
+  const cleaned = (value ?? '').replace(/[₪,]/g, '').trim();
+  if (cleaned === '') return null;
   const num = Number(cleaned);
-  return Number.isFinite(num) ? num : 0;
+  return Number.isFinite(num) ? num : null;
+}
+
+/**
+ * Parses the memory (GB) cell. Same null-not-0 rule as parseShekel - a
+ * malformed "128GB" (unit left in the cell) should drop the row, not
+ * silently become "0GB".
+ */
+function parseMemoryGb(value: string | undefined): number | null {
+  const cleaned = (value ?? '').trim();
+  if (cleaned === '') return null;
+  const num = Number(cleaned);
+  return Number.isFinite(num) ? num : null;
 }
 
 function slugify(...parts: (string | number)[]): string {
@@ -28,6 +47,21 @@ function slugify(...parts: (string | number)[]): string {
     .join('-')
     .toLowerCase()
     .replace(/\s+/g, '-');
+}
+
+/**
+ * Guarantees a unique id even if two sheet rows produce the same slug
+ * (e.g. two colour variants of the same manufacturer+model+storage combo).
+ * Without this, duplicate ids collide in React keys and in the
+ * devices.find(id === ...) lookup used to resolve the selected device.
+ */
+function makeIdFactory() {
+  const seen = new Map<string, number>();
+  return (base: string): string => {
+    const count = seen.get(base) ?? 0;
+    seen.set(base, count + 1);
+    return count === 0 ? base : `${base}-${count + 1}`;
+  };
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -66,27 +100,47 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return record;
     });
 
+    const nextId = makeIdFactory();
+    const skipped: string[] = [];
+
     const devices = records
       .filter((row) => row['יצרן'] && row['דגם מכשיר'])
       .filter((row) => (row['הערות'] ?? '').trim() !== EXCLUDED_NOTE)
       .map((row) => {
         const manufacturer = row['יצרן'].trim();
         const model = row['דגם מכשיר'].trim();
-        const memoryGb = Number(row['נפח זיכרון (GB)']) || 0;
+
+        const memoryGb = parseMemoryGb(row['נפח זיכרון (GB)']);
+        const leaseMonthly = parseShekel(row['עלות ליסינג חודשית, כולל מע"מ']);
+        const buyoutEnd = parseShekel(row['עלות רכישת מכשיר בסוף תקופה, כולל מע"מ']);
+        const weightedListPrice = parseShekel(row['מחיר מחירון משוקלל, כולל מע"מ']);
+
+        // Any of these being unparseable means we don't actually know the
+        // real numbers for this device - showing it with a silent "0" would
+        // be worse than not showing it at all in a cost calculator.
+        if (memoryGb === null || leaseMonthly === null || buyoutEnd === null || weightedListPrice === null) {
+          skipped.push(`${manufacturer} ${model}`);
+          return null;
+        }
 
         return {
-          id: slugify(manufacturer, model, memoryGb),
+          id: nextId(slugify(manufacturer, model, memoryGb)),
           manufacturer,
           model,
           memoryGb,
-          leaseMonthly: parseShekel(row['עלות ליסינג חודשית, כולל מע"מ'] ?? ''),
-          buyoutEnd: parseShekel(row['עלות רכישת מכשיר בסוף תקופה, כולל מע"מ'] ?? ''),
-          weightedListPrice: parseShekel(row['מחיר מחירון משוקלל, כולל מע"מ'] ?? ''),
+          leaseMonthly,
+          buyoutEnd,
+          weightedListPrice,
           priceTier: (row['שיוך מכשיר למדרגת מחיר לחישוב השתתפות עצמית'] ?? '').trim(),
           updatedAt: (row['תאריך עדכון אחרון והפסקת מכירה'] ?? '').trim() || undefined,
           notes: (row['הערות'] ?? '').trim() || undefined,
         };
-      });
+      })
+      .filter((device): device is NonNullable<typeof device> => device !== null);
+
+    if (skipped.length > 0) {
+      console.error('Skipped rows with invalid/missing pricing data:', skipped);
+    }
 
     // Cache at Vercel's edge for an hour, serve stale for a day while
     // refreshing in the background - avoids hitting Google on every request.

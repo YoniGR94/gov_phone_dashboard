@@ -1,3 +1,6 @@
+import type { LucideIcon } from 'lucide-react';
+import { Wallet, Landmark, PackageCheck, TrendingUp, LogOut } from 'lucide-react';
+
 import { money } from '../services/calculations';
 
 type Props = {
@@ -8,12 +11,38 @@ type Props = {
   exitCost: number;
 };
 
-function Card({ title, value, subtitle }: { title: string; value: string; subtitle: string }) {
+type Tone = 'indigo' | 'emerald' | 'violet' | 'sky' | 'rose';
+
+const TONE_STYLES: Record<Tone, { icon: string; ring: string }> = {
+  indigo: { icon: 'bg-indigo-500/15 text-indigo-600', ring: 'ring-indigo-200/60' },
+  emerald: { icon: 'bg-emerald-500/15 text-emerald-600', ring: 'ring-emerald-200/60' },
+  violet: { icon: 'bg-violet-500/15 text-violet-600', ring: 'ring-violet-200/60' },
+  sky: { icon: 'bg-sky-500/15 text-sky-600', ring: 'ring-sky-200/60' },
+  rose: { icon: 'bg-rose-500/15 text-rose-600', ring: 'ring-rose-200/60' },
+};
+
+function Card({
+  title,
+  value,
+  subtitle,
+  icon: Icon,
+  tone,
+}: {
+  title: string;
+  value: string;
+  subtitle: string;
+  icon: LucideIcon;
+  tone: Tone;
+}) {
+  const styles = TONE_STYLES[tone];
   return (
-    <div className="rounded-2xl border bg-white p-4 shadow-sm">
-      <div className="text-sm text-gray-500">{title}</div>
-      <div className="mt-2 text-2xl font-semibold tracking-tight">{value}</div>
-      <div className="mt-1 text-sm text-gray-500">{subtitle}</div>
+    <div className={`glass-card ring-1 ${styles.ring} p-4`}>
+      <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${styles.icon}`}>
+        <Icon className="h-5 w-5" strokeWidth={2.25} />
+      </div>
+      <div className="mt-3 text-sm text-slate-600">{title}</div>
+      <div className="mt-1 font-display text-2xl font-semibold tracking-tight text-slate-900">{value}</div>
+      <div className="mt-1 text-xs text-slate-500">{subtitle}</div>
     </div>
   );
 }
@@ -27,11 +56,41 @@ export default function SummaryCards({
 }: Props) {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-      <Card title="Employee monthly cost" value={money(employeeMonthly)} subtitle="After ministry contribution" />
-      <Card title="Ministry monthly contribution" value={money(officeMonthly)} subtitle="Based on grade band" />
-      <Card title="Buyout at end of lease" value={money(buyoutEnd)} subtitle="At month 24" />
-      <Card title="Accumulated employee cost" value={money(cumulativeEmployee)} subtitle="Up to the selected month" />
-      <Card title="Exit cost now" value={money(exitCost)} subtitle="Early termination simulation" />
+      <Card
+        title="עלות חודשית לעובד"
+        value={money(employeeMonthly)}
+        subtitle="לאחר השתתפות המשרד"
+        icon={Wallet}
+        tone="indigo"
+      />
+      <Card
+        title="השתתפות המשרד"
+        value={money(officeMonthly)}
+        subtitle="לפי מדרגת ההשתתפות"
+        icon={Landmark}
+        tone="emerald"
+      />
+      <Card
+        title="עלות רכישה בסוף התקופה"
+        value={money(buyoutEnd)}
+        subtitle="בחודש ה-24"
+        icon={PackageCheck}
+        tone="violet"
+      />
+      <Card
+        title="עלות מצטברת לעובד"
+        value={money(cumulativeEmployee)}
+        subtitle="עד החודש הנבחר"
+        icon={TrendingUp}
+        tone="sky"
+      />
+      <Card
+        title="עלות יציאה מוקדמת"
+        value={money(exitCost)}
+        subtitle="סימולציית סיום מוקדם כעת"
+        icon={LogOut}
+        tone="rose"
+      />
     </div>
   );
 }

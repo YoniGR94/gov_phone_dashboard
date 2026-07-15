@@ -1,3 +1,5 @@
+import { Smartphone, TriangleAlert } from 'lucide-react';
+
 import type { Device, GradeType } from '../types';
 import DeviceSelector from '../components/DeviceSelector';
 import GradeSelector from '../components/GradeSelector';
@@ -17,6 +19,7 @@ type Props = {
   onContinue: () => void;
   canContinue: boolean;
   loading: boolean;
+  loadError: boolean;
 };
 
 export default function SelectionPage({
@@ -34,18 +37,22 @@ export default function SelectionPage({
   onContinue,
   canContinue,
   loading,
+  loadError,
 }: Props) {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen">
       <div className="mx-auto max-w-7xl px-4 py-8">
-        <div className="mb-6 flex items-center justify-between gap-4">
+        <div className="mb-6 flex flex-col items-start justify-between gap-4 lg:flex-row lg:items-center">
           <div>
-            <div className="inline-flex rounded-full bg-white px-3 py-1 text-sm shadow-sm ring-1 ring-slate-200">
-              Government mobile leasing dashboard
-            </div>
-            <h1 className="mt-4 text-3xl font-bold tracking-tight">Choose device, grade type and rank</h1>
+            <span className="glass-pill">
+              <Smartphone className="h-4 w-4" />
+              ליסינג טלפון נייד לעובדי מדינה
+            </span>
+            <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-slate-900">
+              בחרו מכשיר, קבוצת דרגה ודרגה
+            </h1>
             <p className="mt-2 max-w-2xl text-sm text-slate-600">
-              Data is loaded from public JSON files in the project and can later be replaced by public Google Sheets URLs.
+              המערכת תחשב עבורכם את העלות החודשית, ההשתתפות של המשרד ואת עלות היציאה המוקדמת מהליסינג.
             </p>
           </div>
 
@@ -53,11 +60,21 @@ export default function SelectionPage({
             type="button"
             onClick={onContinue}
             disabled={!canContinue || loading}
-            className="rounded-xl bg-slate-900 px-4 py-2 text-white shadow-sm hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="glass-button-primary w-full lg:w-auto"
           >
-            {loading ? 'Loading...' : 'Open dashboard'}
+            {loading ? 'טוען נתונים...' : 'פתיחת לוח המחוונים'}
           </button>
         </div>
+
+        {loadError && (
+          <div className="glass-card mb-6 flex items-start gap-3 border-rose-200/70 p-4">
+            <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0 text-rose-500" />
+            <div>
+              <p className="text-sm font-semibold text-slate-900">טעינת הנתונים נכשלה</p>
+              <p className="mt-0.5 text-sm text-slate-600">רעננו את הדף, ואם התקלה נמשכת פנו לגורם התומך.</p>
+            </div>
+          </div>
+        )}
 
         <div className="grid gap-4 lg:grid-cols-3">
           <div className="lg:col-span-2">

@@ -60,11 +60,9 @@ export function calculateMonthlyOfficeCost(device: Device, band: GradeBand): num
 }
 
 /**
- * Cost to the employee if they leave the program at a given month (1-24).
- * Formula per public/data/terminationRules.json ("early_exit"):
+ * Cost to the employee if they leave the program at a given month (1-24):
  *   weightedListPrice - (months already paid * employee's monthly cost)
- * At month 24 (end of lease) this becomes the flat buyout price instead,
- * per the "end_of_lease" rule.
+ * At month 24 (end of lease) this becomes the flat buyout price instead.
  */
 export function calculateExitCost(device: Device, month: number, band: GradeBand): number {
   if (month >= 24) {
@@ -81,6 +79,30 @@ export function calculateExitCost(device: Device, month: number, band: GradeBand
 export function calculateTotal24Months(device: Device, band: GradeBand): number {
   const employeeMonthly = calculateMonthlyEmployeeCost(device, band);
   return employeeMonthly * 24 + device.buyoutEnd;
+}
+
+/**
+ * Picks the devices actually worth showing in the "total cost" comparison
+ * chart: the employee's selected device, plus the cheapest and priciest
+ * alternatives (by full 24-month cost including buyout). Previously this
+ * was just `devices.slice(0, 3)` - the first 3 rows in sheet order, with no
+ * relationship to what the employee picked, which made the chart's own
+ * title ("comparison") inaccurate.
+ */
+export function buildComparisonDevices(devices: Device[], selected: Device): Device[] {
+  const totalCost = (d: Device) => d.leaseMonthly * 24 + d.buyoutEnd;
+  const others = devices
+    .filter((d) => d.id !== selected.id)
+    .sort((a, b) => totalCost(a) - totalCost(b));
+
+  const cheapest = others[0];
+  const priciest = others[others.length - 1];
+
+  const set = [selected, cheapest, priciest].filter(
+    (d, index, arr): d is Device => Boolean(d) && arr.findIndex((x) => x?.id === d.id) === index
+  );
+
+  return set;
 }
 
 /**

@@ -1,4 +1,5 @@
 import type { GradeType } from '../types';
+import { money } from '../services/calculations';
 
 type Props = {
   gradeType: GradeType;
@@ -22,14 +23,14 @@ export default function GradeSelector({
   bandContribution,
 }: Props) {
   return (
-    <div className="rounded-2xl border bg-white p-4 shadow-sm">
-      <h2 className="text-lg font-semibold">Employee selection</h2>
+    <div className="glass-panel p-5">
+      <h2 className="font-display text-lg font-semibold text-slate-900">פרטי העובד</h2>
 
       <div className="mt-4 space-y-4">
         <label className="block">
-          <span className="mb-1 block text-sm text-slate-600">Grade type</span>
+          <span className="mb-1.5 block text-sm text-slate-600">קבוצת דרגה</span>
           <select
-            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none focus:border-slate-900"
+            className="glass-select"
             value={gradeType}
             onChange={(e) => onGradeTypeChange(e.target.value as GradeType)}
           >
@@ -42,12 +43,8 @@ export default function GradeSelector({
         </label>
 
         <label className="block">
-          <span className="mb-1 block text-sm text-slate-600">Rank</span>
-          <select
-            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none focus:border-slate-900"
-            value={rank}
-            onChange={(e) => onRankChange(e.target.value)}
-          >
+          <span className="mb-1.5 block text-sm text-slate-600">דרגה</span>
+          <select className="glass-select" value={rank} onChange={(e) => onRankChange(e.target.value)}>
             {ranks.map((item) => (
               <option key={item} value={item}>
                 {item}
@@ -56,9 +53,13 @@ export default function GradeSelector({
           </select>
         </label>
 
-        <div className="rounded-xl bg-slate-50 p-3 text-sm text-slate-600">
-          Mapped band: <span className="font-semibold text-slate-900">{bandLabel}</span>
-          <div className="mt-1">Monthly allowance: {bandContribution.toFixed(2)} ILS</div>
+        <div className="rounded-2xl border border-white/60 bg-white/40 p-3.5 text-sm text-slate-600">
+          <div>
+            מדרגת השתתפות: <span className="font-semibold text-slate-900">{bandLabel}</span>
+          </div>
+          <div className="mt-1">
+            השתתפות חודשית של המשרד: <span className="font-semibold text-slate-900">{money(bandContribution)}</span>
+          </div>
         </div>
       </div>
     </div>
