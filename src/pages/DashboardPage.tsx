@@ -40,7 +40,7 @@ export default function DashboardPage({
   const point = chartData[selectedMonth - 1];
   const employeeMonthly = calculateMonthlyEmployeeCost(device, band);
   const officeMonthly = calculateMonthlyOfficeCost(device, band);
-  const exitCost = calculateExitCost(device, selectedMonth, band);
+  const exitCost = calculateExitCost(device, selectedMonth);
   const total24Months = calculateTotal24Months(device, band);
   const comparisonDevices = buildComparisonDevices(devices, device);
 
