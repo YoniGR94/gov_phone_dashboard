@@ -60,16 +60,40 @@ export function calculateMonthlyOfficeCost(device: Device, band: GradeBand): num
 }
 
 /**
- * Cost to the employee if they leave the program at a given month (1-24):
- *   weightedListPrice - (months already paid * employee's monthly cost)
- * At month 24 (end of lease) this becomes the flat buyout price instead.
+ * Monthly cost of the SIM-only (device-free) plan option - office-funded,
+ * fixed per the regulation's Appendix ("תוכנית חבילת דיבור הודעות וגלישה
+ * סים אונלי/SIM ONLY"). That option has no device and no lease commitment,
+ * so it's used below as the baseline subtracted from a device's lease
+ * cost: the difference is the portion of the monthly payment that's
+ * actually financing the device itself.
+ *
+ * This is a fixed policy constant, not sheet data - update it here if the
+ * appendix is revised.
  */
-export function calculateExitCost(device: Device, month: number, band: GradeBand): number {
-  if (month >= 24) {
-    return device.buyoutEnd;
-  }
-  const employeeMonthly = calculateMonthlyEmployeeCost(device, band);
-  return Math.max(device.weightedListPrice - employeeMonthly * month, 0);
+export const SIM_ONLY_MONTHLY_COST = 11.06;
+
+/**
+ * Payment owed to the supplier to buy the device out before the 24-month
+ * lease ends, per the regulation's Appendix formula: G = A * (B - C) + E
+ *   A = months remaining until month 24 (NOT months already paid)
+ *   B = device's full monthly lease cost (device.leaseMonthly - the gross
+ *       amount, not reduced by the ministry's subsidy; the subsidy only
+ *       affects the employee's monthly out-of-pocket cost during an
+ *       active lease, it plays no part in the buyout math)
+ *   C = SIM_ONLY_MONTHLY_COST
+ *   E = device's end-of-lease buyout price (device.buyoutEnd)
+ *
+ * This is a linear function of `month` that lands exactly on E (the flat
+ * buyout price) at month 24, since A is 0 there - no special-cased
+ * "if month >= 24" branch needed.
+ */
+export function calculateExitCost(device: Device, month: number): number {
+  const monthsRemaining = 24 - month; // A
+  // Floored so a device priced below the SIM-only baseline (bad sheet
+  // data) can't flip the formula into an increasing function instead of
+  // a decreasing one.
+  const devicePortion = Math.max(device.leaseMonthly - SIM_ONLY_MONTHLY_COST, 0); // B - C
+  return monthsRemaining * devicePortion + device.buyoutEnd;
 }
 
 /**
@@ -119,7 +143,7 @@ export function buildChartData(device: Device, band: GradeBand): ChartPoint[] {
       employeeMonthly,
       officeMonthly,
       cumulativeEmployee: employeeMonthly * month,
-      exitCost: calculateExitCost(device, month, band),
+      exitCost: calculateExitCost(device, month),
       buyoutAtEnd: device.buyoutEnd,
     };
   });
