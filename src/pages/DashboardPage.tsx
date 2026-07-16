@@ -12,6 +12,7 @@ import {
 } from '../services/calculations';
 import SummaryCards from '../components/SummaryCards';
 import Charts from '../components/Charts';
+import Credit from '../components/Credit';
 
 type Props = {
   device: Device;
@@ -126,6 +127,8 @@ export default function DashboardPage({
             </div>
           </div>
         </div>
+
+        <Credit />
       </div>
     </div>
   );
