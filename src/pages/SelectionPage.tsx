@@ -3,6 +3,7 @@ import { Smartphone, TriangleAlert } from 'lucide-react';
 import type { Device, GradeType } from '../types';
 import DeviceSelector from '../components/DeviceSelector';
 import GradeSelector from '../components/GradeSelector';
+import Credit from '../components/Credit';
 
 type Props = {
   devices: Device[];
@@ -91,6 +92,8 @@ export default function SelectionPage({
             bandContribution={bandContribution}
           />
         </div>
+
+        <Credit />
       </div>
     </div>
   );
