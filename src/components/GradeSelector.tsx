@@ -53,7 +53,7 @@ export default function GradeSelector({
           </select>
         </label>
 
-        <div className="rounded-2xl border border-white/60 bg-white/40 p-3.5 text-sm text-slate-600">
+        <div className="rounded-2xl border border-slate-400/40 bg-white/40 p-3.5 text-sm text-slate-600">
           <div>
             מדרגת השתתפות: <span className="font-semibold text-slate-900">{bandLabel}</span>
           </div>

@@ -88,13 +88,13 @@ export default function DeviceSelector({ devices, selectedDeviceId, onChange }: 
       )}
 
       {devices.length === 0 ? (
-        <div className="mt-4 flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/70 bg-white/30 px-4 py-10 text-center">
+        <div className="mt-4 flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-400/60 bg-white/30 px-4 py-10 text-center">
           <Smartphone className="h-8 w-8 text-slate-400" strokeWidth={1.75} />
           <p className="mt-3 text-sm font-medium text-slate-600">לא נמצאו מכשירים זמינים כרגע</p>
           <p className="mt-1 text-xs text-slate-500">נסו לרענן את הדף בעוד כמה דקות.</p>
         </div>
       ) : filteredDevices.length === 0 ? (
-        <div className="mt-4 flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/70 bg-white/30 px-4 py-10 text-center">
+        <div className="mt-4 flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-400/60 bg-white/30 px-4 py-10 text-center">
           <Smartphone className="h-8 w-8 text-slate-400" strokeWidth={1.75} />
           <p className="mt-3 text-sm font-medium text-slate-600">אין מכשירים התואמים לסינון שנבחר</p>
           <button
@@ -120,8 +120,8 @@ export default function DeviceSelector({ devices, selectedDeviceId, onChange }: 
                 aria-pressed={active}
                 className={`rounded-2xl border p-4 text-right transition ${
                   active
-                    ? 'border-indigo-400/70 bg-indigo-50/70 shadow-[0_0_0_3px_rgba(99,102,241,0.25)]'
-                    : 'border-white/60 bg-white/40 hover:bg-white/60'
+                    ? 'border-indigo-500 bg-indigo-50/70 shadow-[0_0_0_3px_rgba(79,70,229,0.35)]'
+                    : 'border-slate-400/50 bg-white/40 hover:border-slate-500/60 hover:bg-white/60'
                 }`}
               >
                 <div className="text-lg font-semibold text-slate-900">

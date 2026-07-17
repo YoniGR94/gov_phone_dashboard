@@ -68,7 +68,7 @@ export default function SelectionPage({
         </div>
 
         {loadError && (
-          <div className="glass-card mb-6 flex items-start gap-3 border-rose-200/70 p-4">
+          <div className="glass-card mb-6 flex items-start gap-3 border-rose-400/60 p-4">
             <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0 text-rose-500" />
             <div>
               <p className="text-sm font-semibold text-slate-900">טעינת הנתונים נכשלה</p>

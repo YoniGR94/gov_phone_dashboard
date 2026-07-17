@@ -35,11 +35,13 @@ body {
   .glass-panel {
     position: relative;
     border-radius: 28px;
-    border: 1px solid rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(51, 65, 85, 0.28);
     background-color: rgba(255, 255, 255, 0.55);
     backdrop-filter: blur(28px);
     -webkit-backdrop-filter: blur(28px);
-    box-shadow: 0 20px 50px -20px rgba(30, 27, 75, 0.35);
+    box-shadow:
+      0 1px 1px rgba(15, 23, 42, 0.06),
+      0 20px 50px -20px rgba(30, 27, 75, 0.45);
   }
   .glass-panel::before {
     content: '';
@@ -55,15 +57,17 @@ body {
     position: relative;
     overflow: hidden;
     border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(51, 65, 85, 0.22);
     background-color: rgba(255, 255, 255, 0.55);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 12px 30px -14px rgba(30, 27, 75, 0.3);
+    box-shadow:
+      0 1px 1px rgba(15, 23, 42, 0.05),
+      0 12px 30px -14px rgba(30, 27, 75, 0.4);
   }
 
   .glass-pill {
-    @apply inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/50 px-4 py-1.5 text-sm font-medium text-slate-700 shadow-sm backdrop-blur-xl;
+    @apply inline-flex items-center gap-2 rounded-full border border-slate-500/30 bg-white/50 px-4 py-1.5 text-sm font-medium text-slate-700 shadow-[0_1px_2px_rgba(15,23,42,0.08)] backdrop-blur-xl;
   }
 
   .glass-button-primary {
@@ -71,10 +75,10 @@ body {
   }
 
   .glass-button-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-white/60 bg-white/50 px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm backdrop-blur-xl transition hover:bg-white/70 active:scale-[0.98];
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-500/35 bg-white/50 px-4 py-2.5 text-sm font-medium text-slate-700 shadow-[0_1px_2px_rgba(15,23,42,0.08)] backdrop-blur-xl transition hover:bg-white/70 hover:border-slate-500/50 active:scale-[0.98];
   }
 
   .glass-select {
-    @apply w-full appearance-none rounded-2xl border border-white/70 bg-white/60 px-3 py-2.5 text-sm text-slate-900 shadow-inner outline-none backdrop-blur-xl transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-300/50;
+    @apply w-full appearance-none rounded-2xl border border-slate-500/40 bg-white/60 px-3 py-2.5 text-sm text-slate-900 shadow-[inset_0_1px_2px_rgba(15,23,42,0.08)] outline-none backdrop-blur-xl transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-300/60;
   }
 }
