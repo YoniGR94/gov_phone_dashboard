@@ -3,7 +3,6 @@ import {
   Bar,
   CartesianGrid,
   Cell,
-  Legend,
   LineChart,
   Line,
   ResponsiveContainer,
@@ -44,6 +43,14 @@ function ChartPanel({ title, subtitle, children }: { title: string; subtitle?: s
 }
 
 export default function Charts({ chartData, selectedMonth, comparisonDevices, selectedDeviceId }: Props) {
+  // employeeMonthly/officeMonthly הם ערכים קבועים לאורך כל 24 החודשים (ראו
+  // calculateMonthlyEmployeeCost / calculateMonthlyOfficeCost), אז אין טעם
+  // להציג אותם כסדרה חודשית שחוזרת על עצמה - משווים אותם כשתי קטגוריות.
+  const monthlyComparisonData = [
+    { name: 'עובד', value: chartData[0]?.employeeMonthly ?? 0 },
+    { name: 'משרד', value: chartData[0]?.officeMonthly ?? 0 },
+  ];
+
   const totalCost = (d: Device) => d.leaseMonthly * 24 + d.buyoutEnd;
   const totals = comparisonDevices.map(totalCost);
   const minTotal = Math.min(...totals);
@@ -73,16 +80,21 @@ export default function Charts({ chartData, selectedMonth, comparisonDevices, se
 
   return (
     <div className="grid gap-4 xl:grid-cols-2">
-      <ChartPanel title="עלות חודשית: עובד מול משרד">
+      <ChartPanel
+        title="עלות חודשית: עובד מול משרד"
+        subtitle="הסכום קבוע לאורך כל תקופת הליסינג (24 חודשים)"
+      >
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData}>
+          <BarChart data={monthlyComparisonData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-            <XAxis dataKey="month" stroke="#64748b" fontSize={12} />
+            <XAxis dataKey="name" stroke="#64748b" fontSize={12} />
             <YAxis stroke="#64748b" fontSize={12} />
             <Tooltip formatter={(v: number) => money(v)} />
-            <Legend />
-            <Bar dataKey="employeeMonthly" name="עובד" fill={COLOR_EMPLOYEE} radius={[6, 6, 0, 0]} />
-            <Bar dataKey="officeMonthly" name="משרד" fill={COLOR_OFFICE} radius={[6, 6, 0, 0]} />
+            <Bar dataKey="value" name="עלות חודשית" radius={[6, 6, 0, 0]}>
+              {monthlyComparisonData.map((entry, index) => (
+                <Cell key={entry.name} fill={index === 0 ? COLOR_EMPLOYEE : COLOR_OFFICE} />
+              ))}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </ChartPanel>
