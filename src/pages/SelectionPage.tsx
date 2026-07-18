@@ -77,10 +77,9 @@ export default function SelectionPage({
           </div>
         )}
 
+        {/* סדר הבחירה: דרגה לפני מכשיר. ה-GradeSelector מגיע ראשון ב-DOM כך
+            שבמובייל (תצוגת עמודה אחת) הוא מוצג מעל DeviceSelector. */}
         <div className="grid gap-4 lg:grid-cols-3">
-          <div className="lg:col-span-2">
-            <DeviceSelector devices={devices} selectedDeviceId={selectedDeviceId} onChange={onDeviceChange} />
-          </div>
           <GradeSelector
             gradeType={selectedGradeType}
             rank={selectedRank}
@@ -91,9 +90,24 @@ export default function SelectionPage({
             bandLabel={bandLabel}
             bandContribution={bandContribution}
           />
+          <div className="lg:col-span-2">
+            <DeviceSelector devices={devices} selectedDeviceId={selectedDeviceId} onChange={onDeviceChange} />
+          </div>
         </div>
 
-        <Credit />
+        {/* כפתור שני לפתיחת הדאשבורד + קרדיט, כדי שיהיו נגישים גם בתחתית הדף
+            (חוץ מהכפתור הקיים בראש הדף). */}
+        <div className="mt-8 flex flex-col items-center gap-5 border-t border-slate-400/25 pt-6">
+          <button
+            type="button"
+            onClick={onContinue}
+            disabled={!canContinue || loading}
+            className="glass-button-primary w-full sm:w-auto"
+          >
+            {loading ? 'טוען נתונים...' : 'פתיחת לוח המחוונים'}
+          </button>
+          <Credit />
+        </div>
       </div>
     </div>
   );
