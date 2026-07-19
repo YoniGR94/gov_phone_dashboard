@@ -43,7 +43,7 @@ export default function DashboardPage({
   const officeMonthly = calculateMonthlyOfficeCost(device, band);
   const exitCost = calculateExitCost(device, selectedMonth);
   const total24Months = calculateTotal24Months(device, band);
-  const comparisonDevices = buildComparisonDevices(devices, device);
+  const comparisonDevices = buildComparisonDevices(devices, device, band);
 
   return (
     <div className="min-h-screen">
@@ -107,6 +107,7 @@ export default function DashboardPage({
             selectedMonth={selectedMonth}
             comparisonDevices={comparisonDevices}
             selectedDeviceId={device.id}
+            band={band}
           />
         </div>
 
