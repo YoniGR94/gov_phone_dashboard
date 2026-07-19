@@ -3,8 +3,11 @@ import {
   Bar,
   CartesianGrid,
   Cell,
+  Label,
+  Legend,
   LineChart,
   Line,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -30,6 +33,7 @@ const COLOR_SELECTED = '#4f46e5'; // indigo-600
 const COLOR_CHEAPEST = '#10b981'; // emerald-500
 const COLOR_PRICIEST = '#fb7185'; // rose-400
 const COLOR_NEUTRAL = '#94a3b8'; // slate-400
+const COLOR_UNUSED = '#cbd5e1'; // slate-300 - "בזבוז" של מכסה שלא נוצלה
 
 function ChartPanel({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
@@ -44,13 +48,32 @@ function ChartPanel({ title, subtitle, children }: { title: string; subtitle?: s
 }
 
 export default function Charts({ chartData, selectedMonth, comparisonDevices, selectedDeviceId, band }: Props) {
-  // employeeMonthly/officeMonthly הם ערכים קבועים לאורך כל 24 החודשים (ראו
-  // calculateMonthlyEmployeeCost / calculateMonthlyOfficeCost), אז אין טעם
-  // להציג אותם כסדרה חודשית שחוזרת על עצמה - משווים אותם כשתי קטגוריות.
-  const monthlyComparisonData = [
-    { name: 'עובד', value: chartData[0]?.employeeMonthly ?? 0 },
-    { name: 'משרד', value: chartData[0]?.officeMonthly ?? 0 },
+  // כמה מהמכסה החודשית (band.employeeContribution) נוצלה בפועל:
+  // - officeUsed: מה שהמשרד בפועל שילם (מוגבל למכסה)
+  // - employeeExcess: אם המכשיר עולה יותר מהמכסה - מה שהעובד משלם מכיסו מעבר לה
+  // - unusedQuota: אם המכשיר עולה פחות מהמכסה - כמה מהמכסה נשאר "על השולחן"
+  // employeeExcess ו-unusedQuota הם תרתי-דסתרי מבחינה מתמטית - לא יתכן ששניהם
+  // גדולים מ-0 יחד, כי אחד הוא max(0,lease-quota) והשני max(0,quota-lease).
+  const officeUsed = chartData[0]?.officeMonthly ?? 0;
+  const employeeExcess = chartData[0]?.employeeMonthly ?? 0;
+  const quota = band.employeeContribution;
+  const unusedQuota = Math.max(quota - officeUsed, 0);
+
+  const utilizationData = [
+    {
+      name: 'ניצול המכסה',
+      officeUsed,
+      employeeExcess,
+      unusedQuota,
+    },
   ];
+
+  const utilizationSubtitle =
+    employeeExcess > 0
+      ? `נוצלה כל המכסה (${money(quota)}) + ${money(employeeExcess)} מכיסו של העובד`
+      : unusedQuota > 0
+        ? `נוצלו ${money(officeUsed)} מתוך מכסה של ${money(quota)} · ${money(unusedQuota)} לא מנוצלים`
+        : `נוצלה כל המכסה של ${money(quota)}, במדויק`;
 
   // מסמן את החודש הנבחר על גרף העלות המצטברת, בדיוק כמו ההדגשה האדומה
   // בגרף עלות היציאה המוקדמת - כשהעיגול "מוסתר" (r=0) בשאר החודשים.
@@ -101,21 +124,24 @@ export default function Charts({ chartData, selectedMonth, comparisonDevices, se
 
   return (
     <div className="grid gap-4 xl:grid-cols-2">
-      <ChartPanel
-        title="עלות חודשית: עובד מול משרד"
-        subtitle="הסכום קבוע לאורך כל תקופת הליסינג (24 חודשים)"
-      >
+      <ChartPanel title="ניצול מכסת ההשתתפות החודשית" subtitle={utilizationSubtitle}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={monthlyComparisonData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-            <XAxis dataKey="name" stroke="#64748b" fontSize={12} />
-            <YAxis stroke="#64748b" fontSize={12} />
+          <BarChart
+            data={utilizationData}
+            layout="vertical"
+            margin={{ top: 24, right: 24, left: 8, bottom: 8 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" horizontal={false} />
+            <XAxis type="number" stroke="#64748b" fontSize={12} tickFormatter={(v: number) => money(v)} />
+            <YAxis type="category" dataKey="name" stroke="#64748b" fontSize={12} width={90} />
             <Tooltip formatter={(v: number) => money(v)} />
-            <Bar dataKey="value" name="עלות חודשית" radius={[6, 6, 0, 0]}>
-              {monthlyComparisonData.map((entry, index) => (
-                <Cell key={entry.name} fill={index === 0 ? COLOR_EMPLOYEE : COLOR_OFFICE} />
-              ))}
-            </Bar>
+            <Legend />
+            <ReferenceLine x={quota} stroke="#0f172a" strokeDasharray="4 4">
+              <Label value={`מכסה: ${money(quota)}`} position="top" fontSize={11} fill="#0f172a" />
+            </ReferenceLine>
+            <Bar dataKey="officeUsed" name="השתתפות שנוצלה (משרד)" stackId="a" fill={COLOR_OFFICE} radius={[6, 0, 0, 6]} />
+            <Bar dataKey="employeeExcess" name="תוספת מכיסו של העובד" stackId="a" fill={COLOR_EMPLOYEE} radius={[0, 6, 6, 0]} />
+            <Bar dataKey="unusedQuota" name="מכסה שלא נוצלה" stackId="a" fill={COLOR_UNUSED} radius={[0, 6, 6, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </ChartPanel>
