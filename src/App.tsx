@@ -21,6 +21,10 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [selection, setSelection] = useState<DashboardSelection>(defaultSelection);
+  // בכוונה לא ב-localStorage/sessionStorage: אנחנו רוצים שההתראה תופיע שוב
+  // בכל רענון/פתיחה מלאה של האתר (App נטען מחדש), אבל תישאר סגורה כשעוברים
+  // לדשבורד וחוזרים למסך הבחירה בתוך אותה טעינה (page state, לא unmount).
+  const [disclaimerDismissed, setDisclaimerDismissed] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -107,6 +111,8 @@ export default function App() {
         canContinue={canContinue}
         loading={loading}
         loadError={loadError}
+        showDisclaimer={!disclaimerDismissed}
+        onDismissDisclaimer={() => setDisclaimerDismissed(true)}
       />
     );
   }
