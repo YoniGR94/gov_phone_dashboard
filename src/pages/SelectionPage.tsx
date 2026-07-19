@@ -63,7 +63,7 @@ export default function SelectionPage({
             disabled={!canContinue || loading}
             className="glass-button-primary w-full lg:w-auto"
           >
-            {loading ? 'טוען נתונים...' : 'פתיחת לוח המחוונים'}
+            {loading ? 'טוען נתונים...' : 'פתיחת לוח השוואה'}
           </button>
         </div>
 
@@ -104,7 +104,7 @@ export default function SelectionPage({
             disabled={!canContinue || loading}
             className="glass-button-primary w-full sm:w-auto"
           >
-            {loading ? 'טוען נתונים...' : 'פתיחת לוח המחוונים'}
+            {loading ? 'טוען נתונים...' : 'פתיחת לוח השוואה'}
           </button>
           <Credit />
         </div>
