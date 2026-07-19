@@ -4,7 +4,7 @@ An interactive cost calculator for Israeli government employees enrolled in the 
 
 🔗 **[Live demo](https://gov-phone-dashboard.vercel.app/)**
 
-<!-- Add screenshot here: <img src="https://.../screenshot.png" width="600"/> -->
+![Dashboard screenshot](docs/screenshot.png)
 
 ## What it does
 
