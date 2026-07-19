@@ -108,16 +108,20 @@ export function calculateTotal24Months(device: Device, band: GradeBand): number 
 /**
  * Picks the devices actually worth showing in the "total cost" comparison
  * chart: the employee's selected device, plus the cheapest and priciest
- * alternatives (by full 24-month cost including buyout). Previously this
- * was just `devices.slice(0, 3)` - the first 3 rows in sheet order, with no
- * relationship to what the employee picked, which made the chart's own
- * title ("comparison") inaccurate.
+ * alternatives. Previously this was just `devices.slice(0, 3)` - the first 3
+ * rows in sheet order, with no relationship to what the employee picked,
+ * which made the chart's own title ("comparison") inaccurate.
+ *
+ * Ranked by the employee's actual net cost for that grade band
+ * (calculateTotal24Months - i.e. after the ministry's subsidy is applied),
+ * NOT by the device's raw lease price. A device's gross price ranking and
+ * an employee's net-cost ranking can differ once the subsidy cap kicks in,
+ * and net cost is what the employee is actually deciding between.
  */
-export function buildComparisonDevices(devices: Device[], selected: Device): Device[] {
-  const totalCost = (d: Device) => d.leaseMonthly * 24 + d.buyoutEnd;
+export function buildComparisonDevices(devices: Device[], selected: Device, band: GradeBand): Device[] {
   const others = devices
     .filter((d) => d.id !== selected.id)
-    .sort((a, b) => totalCost(a) - totalCost(b));
+    .sort((a, b) => calculateTotal24Months(a, band) - calculateTotal24Months(b, band));
 
   const cheapest = others[0];
   const priciest = others[others.length - 1];
