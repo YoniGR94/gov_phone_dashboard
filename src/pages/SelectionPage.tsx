@@ -1,4 +1,4 @@
-import { Smartphone, TriangleAlert } from 'lucide-react';
+import { Info, Smartphone, TriangleAlert, X } from 'lucide-react';
 
 import type { Device, GradeType } from '../types';
 import DeviceSelector from '../components/DeviceSelector';
@@ -21,6 +21,8 @@ type Props = {
   canContinue: boolean;
   loading: boolean;
   loadError: boolean;
+  showDisclaimer: boolean;
+  onDismissDisclaimer: () => void;
 };
 
 export default function SelectionPage({
@@ -39,10 +41,37 @@ export default function SelectionPage({
   canContinue,
   loading,
   loadError,
+  showDisclaimer,
+  onDismissDisclaimer,
 }: Props) {
   return (
     <div className="min-h-screen">
       <div className="mx-auto max-w-7xl px-4 py-8">
+        {/* התראה ידידותית, לא חוסמת - מוצגת רק בטעינה/רענון ראשוני של האתר.
+            המצב עצמו (showDisclaimer) חי ב-state של App.tsx בלבד, בלי
+            localStorage/sessionStorage, כדי שתתאפס בכל רענון אמיתי אבל
+            תישאר סגורה כשעוברים לדשבורד וחוזרים למסך הזה בתוך אותה טעינה. */}
+        {showDisclaimer && (
+          <div className="glass-card mb-6 flex items-start gap-3 border-amber-400/60 p-4">
+            <Info className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-slate-900">כלי עזר לא רשמי</p>
+              <p className="mt-0.5 text-sm text-slate-600">
+                המחשבון מבוסס על מידע פומבי בלבד ועלול להכיל טעויות או אי-דיוקים. בכל מקרה של סתירה בין המוצג כאן
+                לבין הוראות התכ"ם התקפות - הוראות התכ"ם הן המחייבות, והמחשבון אינו מהווה תחליף להן.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onDismissDisclaimer}
+              aria-label="סגירת ההודעה"
+              className="shrink-0 rounded-md p-1 text-slate-400 transition hover:bg-slate-900/5 hover:text-slate-600"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+
         <div className="mb-6 flex flex-col items-start justify-between gap-4 lg:flex-row lg:items-center">
           <div>
             <span className="glass-pill">
@@ -63,7 +92,7 @@ export default function SelectionPage({
             disabled={!canContinue || loading}
             className="glass-button-primary w-full lg:w-auto"
           >
-            {loading ? 'טוען נתונים...' : 'פתיחת לוח השוואה'}
+            {loading ? 'טוען נתונים...' : 'פתיחת לוח המחוונים'}
           </button>
         </div>
 
@@ -104,7 +133,7 @@ export default function SelectionPage({
             disabled={!canContinue || loading}
             className="glass-button-primary w-full sm:w-auto"
           >
-            {loading ? 'טוען נתונים...' : 'פתיחת לוח השוואה'}
+            {loading ? 'טוען נתונים...' : 'פתיחת לוח המחוונים'}
           </button>
           <Credit />
         </div>
