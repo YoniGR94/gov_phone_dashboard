@@ -11,14 +11,15 @@ import {
   YAxis,
 } from 'recharts';
 
-import type { ChartPoint, Device } from '../types';
-import { money } from '../services/calculations';
+import type { ChartPoint, Device, GradeBand } from '../types';
+import { calculateTotal24Months, money } from '../services/calculations';
 
 type Props = {
   chartData: ChartPoint[];
   selectedMonth: number;
   comparisonDevices: Device[];
   selectedDeviceId: string;
+  band: GradeBand;
 };
 
 const COLOR_EMPLOYEE = '#6366f1'; // indigo-500
@@ -42,7 +43,7 @@ function ChartPanel({ title, subtitle, children }: { title: string; subtitle?: s
   );
 }
 
-export default function Charts({ chartData, selectedMonth, comparisonDevices, selectedDeviceId }: Props) {
+export default function Charts({ chartData, selectedMonth, comparisonDevices, selectedDeviceId, band }: Props) {
   // employeeMonthly/officeMonthly הם ערכים קבועים לאורך כל 24 החודשים (ראו
   // calculateMonthlyEmployeeCost / calculateMonthlyOfficeCost), אז אין טעם
   // להציג אותם כסדרה חודשית שחוזרת על עצמה - משווים אותם כשתי קטגוריות.
@@ -51,7 +52,27 @@ export default function Charts({ chartData, selectedMonth, comparisonDevices, se
     { name: 'משרד', value: chartData[0]?.officeMonthly ?? 0 },
   ];
 
-  const totalCost = (d: Device) => d.leaseMonthly * 24 + d.buyoutEnd;
+  // מסמן את החודש הנבחר על גרף העלות המצטברת, בדיוק כמו ההדגשה האדומה
+  // בגרף עלות היציאה המוקדמת - כשהעיגול "מוסתר" (r=0) בשאר החודשים.
+  const renderCumulativeDot = (props: { cx?: number; cy?: number; payload?: ChartPoint; index?: number }) => {
+    const { cx, cy, payload, index } = props;
+    const isSelected = payload?.month === selectedMonth;
+    return (
+      <circle
+        key={`cumulative-dot-${index}`}
+        cx={cx}
+        cy={cy}
+        r={isSelected ? 6 : 0}
+        fill={COLOR_EXIT_ACTIVE}
+        stroke="#ffffff"
+        strokeWidth={isSelected ? 2 : 0}
+      />
+    );
+  };
+
+  // עלות כוללת נטו לעובד (אחרי הנחת הדרגה), לא מחיר גולמי של המכשיר - ראו
+  // הערה על calculateTotal24Months ב-buildComparisonDevices.
+  const totalCost = (d: Device) => calculateTotal24Months(d, band);
   const totals = comparisonDevices.map(totalCost);
   const minTotal = Math.min(...totals);
   const maxTotal = Math.max(...totals);
@@ -112,7 +133,7 @@ export default function Charts({ chartData, selectedMonth, comparisonDevices, se
               name="עלות מצטברת"
               stroke={COLOR_SELECTED}
               strokeWidth={2.5}
-              dot={false}
+              dot={renderCumulativeDot}
             />
           </LineChart>
         </ResponsiveContainer>
@@ -136,7 +157,7 @@ export default function Charts({ chartData, selectedMonth, comparisonDevices, se
 
       <ChartPanel
         title="השוואת עלות כוללת ל-24 חודשים"
-        subtitle="המכשיר שנבחר לעומת החלופה הזולה ביותר והיקרה ביותר"
+        subtitle="עלות נטו בפועל לעובד לפי הדרגה שלו, לא מחיר גולמי של המכשיר"
       >
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={comparisonData}>
