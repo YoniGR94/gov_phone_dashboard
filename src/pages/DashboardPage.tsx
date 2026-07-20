@@ -7,6 +7,7 @@ import {
   calculateExitCost,
   calculateMonthlyEmployeeCost,
   calculateMonthlyOfficeCost,
+  calculateSavedSoFar,
   calculateTotal24Months,
   money,
 } from '../services/calculations';
@@ -42,6 +43,7 @@ export default function DashboardPage({
   const employeeMonthly = calculateMonthlyEmployeeCost(device, band);
   const officeMonthly = calculateMonthlyOfficeCost(device, band);
   const exitCost = calculateExitCost(device, selectedMonth);
+  const savedSoFar = calculateSavedSoFar(device, band, selectedMonth);
   const total24Months = calculateTotal24Months(device, band);
   const comparisonDevices = buildComparisonDevices(devices, device, band);
 
@@ -51,9 +53,16 @@ export default function DashboardPage({
         <div className="mb-6 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
           <div>
             <span className="glass-pill">לוח מחוונים</span>
-            <p className="mt-2 text-sm text-slate-600">
-              {device.manufacturer} {device.model} · {selectedGradeType} · דרגה {selectedRank} · {band.label}
-            </p>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <p className="text-sm text-slate-600">
+                {device.manufacturer} {device.model} · {selectedGradeType} · דרגה {selectedRank} · {band.label}
+              </p>
+              {device.discontinued && (
+                <span className="rounded-full bg-rose-100 px-2 py-0.5 text-xs font-medium text-rose-600">
+                  הוצא ממכירה - לא ניתן לרכישה כמכשיר חדש
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -74,6 +83,7 @@ export default function DashboardPage({
           buyoutEnd={device.buyoutEnd}
           cumulativeEmployee={point.cumulativeEmployee}
           exitCost={exitCost}
+          savedSoFar={savedSoFar}
         />
 
         <div className="glass-panel mt-6 p-4">

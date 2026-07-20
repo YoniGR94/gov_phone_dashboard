@@ -60,6 +60,18 @@ export function calculateMonthlyOfficeCost(device: Device, band: GradeBand): num
 }
 
 /**
+ * How much of the office's subsidy the employee has actually "cashed in"
+ * from month 1 through the selected month - i.e. money the employee would
+ * otherwise have paid out of pocket if there were no leasing program.
+ * Same lease-cost cap as calculateMonthlyOfficeCost (the office never pays
+ * more than the device's own lease cost per month), multiplied by the
+ * number of months elapsed on the dashboard's slider.
+ */
+export function calculateSavedSoFar(device: Device, band: GradeBand, month: number): number {
+  return calculateMonthlyOfficeCost(device, band) * month;
+}
+
+/**
  * Monthly cost of the SIM-only (device-free) plan option - office-funded,
  * fixed per the regulation's Appendix ("תוכנית חבילת דיבור הודעות וגלישה
  * סים אונלי/SIM ONLY"). That option has no device and no lease commitment,
@@ -133,7 +145,7 @@ export function calculateTotal24Months(device: Device, band: GradeBand): number 
  */
 export function buildComparisonDevices(devices: Device[], selected: Device, band: GradeBand): Device[] {
   const others = devices
-    .filter((d) => d.id !== selected.id)
+    .filter((d) => d.id !== selected.id && !d.discontinued)
     .sort((a, b) => calculateTotal24Months(a, band) - calculateTotal24Months(b, band));
 
   const cheapest = others[0];

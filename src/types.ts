@@ -24,6 +24,11 @@ export type Device = {
   priceTier: string;
   updatedAt?: string;
   notes?: string;
+  // True when the sheet's "הערות" column marks this model as pulled from
+  // sale ("הוצא מרשימת הדגמים לבחירה"). The device stays selectable (e.g.
+  // for employees who already have it), it's just flagged as no longer
+  // purchasable new.
+  discontinued?: boolean;
 };
 
 // One of the 5 real participation tiers (בכיר א / בכיר ב / תיכון / מירב / מסד).

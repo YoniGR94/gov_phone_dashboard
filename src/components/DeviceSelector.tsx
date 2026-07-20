@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Smartphone } from 'lucide-react';
+import { Smartphone, X } from 'lucide-react';
 
 import type { Device } from '../types';
 import { money } from '../services/calculations';
@@ -113,27 +113,41 @@ export default function DeviceSelector({ devices, selectedDeviceId, onChange }: 
           {filteredDevices.map((device) => {
             const active = device.id === selectedDeviceId;
             return (
-              <button
-                key={device.id}
-                type="button"
-                onClick={() => onChange(device.id)}
-                aria-pressed={active}
-                className={`rounded-2xl border p-4 text-right transition ${
-                  active
-                    ? 'border-indigo-500 bg-indigo-50/70 shadow-[0_0_0_3px_rgba(79,70,229,0.35)]'
-                    : 'border-slate-400/50 bg-white/40 hover:border-slate-500/60 hover:bg-white/60'
-                }`}
-              >
-                <div className="text-lg font-semibold text-slate-900">
-                  {device.manufacturer} {device.model}
-                </div>
-                <div className="mt-1 text-sm text-slate-500">
-                  {device.memoryGb}GB · {device.priceTier}
-                </div>
-                <div className="mt-3 text-sm text-slate-600">
-                  ליסינג חודשי: {money(device.leaseMonthly)} · רכישה בסוף התקופה: {money(device.buyoutEnd)}
-                </div>
-              </button>
+              <div key={device.id} className="relative">
+                {device.discontinued && (
+                  <span
+                    title="הדגם הוצא ממכירה - ניתן לבחור להשוואה, אך לא ניתן לרכוש אותו כמכשיר חדש"
+                    className="absolute -left-2 -top-2 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-white shadow"
+                  >
+                    <X className="h-3.5 w-3.5" strokeWidth={3} />
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => onChange(device.id)}
+                  aria-pressed={active}
+                  className={`w-full rounded-2xl border p-4 text-right transition ${
+                    active
+                      ? 'border-indigo-500 bg-indigo-50/70 shadow-[0_0_0_3px_rgba(79,70,229,0.35)]'
+                      : 'border-slate-400/50 bg-white/40 hover:border-slate-500/60 hover:bg-white/60'
+                  }`}
+                >
+                  <div className="text-lg font-semibold text-slate-900">
+                    {device.manufacturer} {device.model}
+                  </div>
+                  <div className="mt-1 text-sm text-slate-500">
+                    {device.memoryGb}GB · {device.priceTier}
+                  </div>
+                  <div className="mt-3 text-sm text-slate-600">
+                    ליסינג חודשי: {money(device.leaseMonthly)} · רכישה בסוף התקופה: {money(device.buyoutEnd)}
+                  </div>
+                  {device.discontinued && (
+                    <div className="mt-2 text-xs font-medium text-rose-600">
+                      הדגם הוצא ממכירה - לא ניתן לרכישה כמכשיר חדש
+                    </div>
+                  )}
+                </button>
+              </div>
             );
           })}
         </div>

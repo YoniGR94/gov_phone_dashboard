@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Wallet, Landmark, PackageCheck, TrendingUp, LogOut } from 'lucide-react';
+import { Wallet, Landmark, PackageCheck, TrendingUp, LogOut, PiggyBank } from 'lucide-react';
 
 import { money } from '../services/calculations';
 
@@ -9,9 +9,10 @@ type Props = {
   buyoutEnd: number;
   cumulativeEmployee: number;
   exitCost: number;
+  savedSoFar: number;
 };
 
-type Tone = 'indigo' | 'emerald' | 'violet' | 'sky' | 'rose';
+type Tone = 'indigo' | 'emerald' | 'violet' | 'sky' | 'rose' | 'amber';
 
 const TONE_STYLES: Record<Tone, { icon: string; ring: string }> = {
   indigo: { icon: 'bg-indigo-500/15 text-indigo-600', ring: 'ring-indigo-200/60' },
@@ -19,6 +20,7 @@ const TONE_STYLES: Record<Tone, { icon: string; ring: string }> = {
   violet: { icon: 'bg-violet-500/15 text-violet-600', ring: 'ring-violet-200/60' },
   sky: { icon: 'bg-sky-500/15 text-sky-600', ring: 'ring-sky-200/60' },
   rose: { icon: 'bg-rose-500/15 text-rose-600', ring: 'ring-rose-200/60' },
+  amber: { icon: 'bg-amber-500/15 text-amber-600', ring: 'ring-amber-200/60' },
 };
 
 function Card({
@@ -53,9 +55,10 @@ export default function SummaryCards({
   buyoutEnd,
   cumulativeEmployee,
   exitCost,
+  savedSoFar,
 }: Props) {
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       <Card
         title="עלות חודשית לעובד"
         value={money(employeeMonthly)}
@@ -90,6 +93,13 @@ export default function SummaryCards({
         subtitle="סימולציית סיום מוקדם כעת"
         icon={LogOut}
         tone="rose"
+      />
+      <Card
+        title="חסכתם עד כה"
+        value={money(savedSoFar)}
+        subtitle="השתתפות המשרד שכבר נוצלה עד החודש הנבחר"
+        icon={PiggyBank}
+        tone="amber"
       />
     </div>
   );
