@@ -73,6 +73,24 @@ export function calculateMonthlyOfficeCost(device: Device, band: GradeBand): num
 export const SIM_ONLY_MONTHLY_COST = 11.06;
 
 /**
+ * Same buyout formula as calculateExitCost (G = A * (B - C) + E), but lets
+ * the caller drop the E term - the end-of-lease buyout price.
+ *
+ * includeBuyout=true  -> ending the agreement AND keeping/buying the device
+ *                         (identical to calculateExitCost).
+ * includeBuyout=false -> ending the agreement and RETURNING the device: the
+ *                         employee still owes the remaining device debt
+ *                         (A * devicePortion) for months already committed
+ *                         to, but doesn't pay to acquire the device itself.
+ */
+export function calculateExitCostAt(device: Device, month: number, includeBuyout: boolean): number {
+  const monthsRemaining = 24 - month; // A
+  const devicePortion = Math.max(device.leaseMonthly - SIM_ONLY_MONTHLY_COST, 0); // B - C
+  const remainingDeviceDebt = monthsRemaining * devicePortion;
+  return includeBuyout ? remainingDeviceDebt + device.buyoutEnd : remainingDeviceDebt;
+}
+
+/**
  * Payment owed to the supplier to buy the device out before the 24-month
  * lease ends, per the regulation's Appendix formula: G = A * (B - C) + E
  *   A = months remaining until month 24 (NOT months already paid)
@@ -88,12 +106,7 @@ export const SIM_ONLY_MONTHLY_COST = 11.06;
  * "if month >= 24" branch needed.
  */
 export function calculateExitCost(device: Device, month: number): number {
-  const monthsRemaining = 24 - month; // A
-  // Floored so a device priced below the SIM-only baseline (bad sheet
-  // data) can't flip the formula into an increasing function instead of
-  // a decreasing one.
-  const devicePortion = Math.max(device.leaseMonthly - SIM_ONLY_MONTHLY_COST, 0); // B - C
-  return monthsRemaining * devicePortion + device.buyoutEnd;
+  return calculateExitCostAt(device, month, true);
 }
 
 /**
