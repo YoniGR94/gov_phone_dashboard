@@ -1,25 +1,26 @@
-# Government Mobile Leasing Dashboard
+# לוח ליסינג טלפון ממשלתי
 
-An interactive cost calculator for Israeli government employees enrolled in the government mobile-phone leasing program — select a rank and a device, get the real monthly and lifetime cost.
+מחשבון עלויות אינטראקטיבי לעובדי מדינה בתוכנית הליסינג לטלפון סלולרי — בוחרים דרגה ומכשיר, ומקבלים את העלות החודשית והכוללת בפועל.
 
-🔗 **[Live demo](https://gov-phone-dashboard.vercel.app/)**
+🔗 **[לאתר החי](https://gov-phone-dashboard.vercel.app/)**
 
-![Dashboard screenshot](docs/screenshot.png)
+<img src="docs/screenshot.png" width="600"/>
 
-## What it does
+> ⚠️ **כלי עזר לא רשמי** — מבוסס על מידע פומבי בלבד, ועלול להכיל טעויות או אי-דיוקים. בכל מקרה של סתירה בין המוצג באתר לבין הוראות התכ"ם התקפות — הוראות התכ"ם הן המחייבות.
 
-Users pick their employment group, rank, and a device model. The dashboard then calculates:
+## מה האתר עושה
 
-- Monthly employee cost
-- Monthly ministry participation
-- Device buyout cost at the end of the lease period
-- Total 24-month ownership cost
-- Early termination cost for any month of the lease
-- Side-by-side comparisons across available devices
+המשתמש בוחר קבוצת דרגה, דרגה, ומכשיר. הדשבורד מחשב:
 
-The goal is transparency — most employees never see these numbers broken down before signing up for a device.
+- עלות חודשית מהכיס של העובד, והשתתפות המשרד מדי חודש
+- אחוז ניצול מכסת ההשתתפות — כמה מהמכסה נוצל, וכמה נשאר על השולחן אם המכשיר זול ממנה
+- עלות רכישת המכשיר בסוף תקופת הליסינג
+- עלות סיום ההתקשרות בכל חודש נתון — עם אפשרות לבחור אם המחיר כולל רכישת המכשיר (שומרים אותו) או לא (מחזירים אותו)
+- השוואה בין המכשיר הנבחר לחלופה הזולה והיקרה ביותר, לפי אותו תרחיש סיום התקשרות
 
-## Getting Started
+המטרה היא שקיפות — רוב העובדים לא רואים את הפירוק המדויק של המספרים האלה לפני שהם נרשמים למכשיר.
+
+## איך מריצים את זה מקומית
 
 ```bash
 git clone https://github.com/YoniGR94/gov_phone_dashboard.git
@@ -28,56 +29,57 @@ npm install
 npm run dev
 ```
 
-## Features
+## שלבי השימוש
 
-### Step 1 — Employee & Device Selection
-Users choose a device model, employment group (Academic, Administrative, Military, etc.), and rank. The app automatically maps the selected rank to the correct participation tier.
+### שלב 1 — בחירת דרגה ומכשיר
+בוחרים קבוצת דרגה (אקדמאים, מינהלי, צה"ל וכו'), דרגה, ומכשיר. האתר ממפה אוטומטית את הדרגה למכסת ההשתתפות המתאימה.
 
-### Step 2 — Dashboard
-Displays monthly employee payment, monthly government participation, end-of-lease buyout price, accumulated cost over time, an early-termination simulation, and device comparison charts.
+### שלב 2 — לוח המחוונים
+מציג את התשלום החודשי של העובד, השתתפות המשרד, ניצול המכסה, מחיר רכישה בסוף התקופה, עלות מצטברת על פני זמן, סימולציית סיום התקשרות מוקדם (עם/בלי רכישת המכשיר), והשוואה בין מכשירים.
 
-## Tech Stack
+## טכנולוגיות
 
-| Layer | Technology |
+| שכבה | טכנולוגיה |
 |---|---|
 | Frontend | React, TypeScript, Vite |
-| Styling | Tailwind CSS |
-| Charts | Recharts |
-| Icons | Lucide React |
-| CSV parsing | PapaParse |
+| עיצוב | Tailwind CSS |
+| גרפים | Recharts |
+| אייקונים | Lucide React |
+| פרסור CSV | PapaParse |
 | Backend | Vercel Serverless Function (`/api/devices`) |
-| Analytics | Vercel Analytics |
-| Deployment | Vercel |
+| אנליטיקס | Vercel Analytics |
+| דיפלוי | Vercel |
 
-## Data Sources
+## מקורות המידע
 
-**Devices** — pulled live from a Google Sheet, but not fetched directly from the browser. A Vercel serverless function (`api/devices.ts`) fetches and parses the sheet server-side: this avoids CORS failures on Google's CSV export endpoint, handles the sheet's two-row header layout, drops any row with unparseable pricing data instead of silently showing ₪0, and caches the result at the edge (`s-maxage=3600, stale-while-revalidate=86400`) so Google isn't hit on every request.
+**מכשירים** — נשלפים בזמן אמת מגיליון Google Sheets, לא ישירות מהדפדפן. פונקציית שרת ב-Vercel (`api/devices.ts`) שולפת ומפרסרת את הגיליון בצד השרת: כך נמנעות שגיאות CORS מנקודת הייצוא של Google ל-CSV, מטופל מבנה הכותרת הדו-שורתי של הגיליון, כל שורה עם מחיר לא תקין נופלת (ולא מוצגת כ-0 ₪ בטעות), והתוצאה נשמרת במטמון בקצה הרשת (`s-maxage=3600, stale-while-revalidate=86400`) כדי לא לפנות ל-Google בכל בקשה.
 
-**Business rules** — grade bands, participation tiers, government contribution rules, early termination formulas, and ministry/rank mappings are stored locally as JSON in `public/data/`.
+**כללים עסקיים** — מכסות השתתפות, מיפוי דרגה-למכסה, ונוסחת סיום התקשרות מוקדם, מאוחסנים מקומית כ-JSON בתיקיית `public/data/`.
 
-## Repository Structure
+## מבנה הריפו
 
 ```
 ├── api/
-│   └── devices.ts          # Serverless function: fetch + parse live device sheet
+│   └── devices.ts          # פונקציית שרת: שליפה ופרסור של גיליון המכשירים
 ├── public/data/
-│   ├── gradeBands.json
-│   ├── gradeLookup.json
+│   ├── gradeBands.json      # מכסות השתתפות לפי דרגה
+│   ├── gradeLookup.json     # מיפוי דרגה -> מכסה
 │   └── terminationRules.json
 ├── src/
-│   ├── components/         # DeviceSelector, GradeSelector, Charts, SummaryCards
-│   ├── pages/               # SelectionPage, DashboardPage
-│   ├── services/             # data.ts (fetching), calculations.ts (cost logic)
+│   ├── components/          # DeviceSelector, GradeSelector, Charts, SummaryCards
+│   ├── pages/                # SelectionPage, DashboardPage
+│   ├── services/              # data.ts (שליפת נתונים), calculations.ts (נוסחאות העלות)
 │   └── types.ts
-└── deep-research-report.md  # Original planning / architecture doc
+└── deep-research-report.md   # מסמך התכנון/ארכיטקטורה המקורי
 ```
 
-## Limitations
+## מגבלות
 
-- The device list depends on the live structure of the source Google Sheet — if the column layout changes, `api/devices.ts` needs a matching update.
-- No automated test suite yet; correctness is currently verified manually against the source spreadsheet.
-- Business rules (grade bands, tiers) are static JSON, not admin-editable — updating them requires a code change and redeploy.
+- רשימת המכשירים תלויה במבנה החי של גיליון ה-Google Sheets המקורי — שינוי במבנה העמודות מחייב עדכון תואם ב-`api/devices.ts`.
+- אין עדיין חבילת בדיקות אוטומטיות; הנכונות מאומתת ידנית מול גיליון המקור.
+- הכללים העסקיים (מכסות, דרגות) הם JSON סטטי, לא ניתנים לעריכה מממשק ניהול — עדכון מחייב שינוי קוד ודיפלוי מחדש.
+- המחשבון מבוסס על מידע פומבי בלבד ואינו כלי רשמי — המידע הקובע הוא [הוראות תכ"מ 16.7.1](https://takam.mof.gov.il/document/HM.16.7.1).
 
-## Author
+## קרדיט
 
-Yoni Getahun · [LinkedIn](https://www.linkedin.com/in/yoni-getahun/) · [GitHub](https://github.com/YoniGR94/gov_phone_dashboard)
+יוני גטהון · [LinkedIn](https://www.linkedin.com/in/yoni-getahun/) · [GitHub](https://github.com/YoniGR94/gov_phone_dashboard)
