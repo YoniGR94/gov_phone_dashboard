@@ -105,7 +105,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const devices = records
       .filter((row) => row['יצרן'] && row['דגם מכשיר'])
-      .filter((row) => (row['הערות'] ?? '').trim() !== EXCLUDED_NOTE)
       .map((row) => {
         const manufacturer = row['יצרן'].trim();
         const model = row['דגם מכשיר'].trim();
@@ -134,6 +133,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           priceTier: (row['שיוך מכשיר למדרגת מחיר לחישוב השתתפות עצמית'] ?? '').trim(),
           updatedAt: (row['תאריך עדכון אחרון והפסקת מכירה'] ?? '').trim() || undefined,
           notes: (row['הערות'] ?? '').trim() || undefined,
+          // Still shown in the selector (so employees who already have this
+          // device, or want to compare against it, can pick it) - just
+          // flagged so the UI can mark it as no longer purchasable.
+          // Matches by substring, not exact equality - the sheet's note
+          // text isn't always byte-for-byte identical (e.g. extra words
+          // before/after, trailing punctuation).
+          discontinued: (row['הערות'] ?? '').includes(EXCLUDED_NOTE),
         };
       })
       .filter((device): device is NonNullable<typeof device> => device !== null);
