@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -15,7 +16,7 @@ import {
 } from 'recharts';
 
 import type { ChartPoint, Device, GradeBand } from '../types';
-import { calculateTotal24Months, money } from '../services/calculations';
+import { calculateExitCostAt, money } from '../services/calculations';
 
 type Props = {
   chartData: ChartPoint[];
@@ -35,11 +36,22 @@ const COLOR_PRICIEST = '#fb7185'; // rose-400
 const COLOR_NEUTRAL = '#94a3b8'; // slate-400
 const COLOR_UNUSED = '#cbd5e1'; // slate-300 - "בזבוז" של מכסה שלא נוצלה
 
-function ChartPanel({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+function ChartPanel({
+  title,
+  subtitle,
+  controls,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  controls?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <div className="glass-card p-4">
       <h3 className="font-display text-base font-semibold text-slate-900">{title}</h3>
       {subtitle && <p className="mt-0.5 text-xs text-slate-500">{subtitle}</p>}
+      {controls && <div className="mt-2">{controls}</div>}
       <div dir="ltr" className="mt-3 h-72 w-full">
         {children}
       </div>
@@ -48,6 +60,26 @@ function ChartPanel({ title, subtitle, children }: { title: string; subtitle?: s
 }
 
 export default function Charts({ chartData, selectedMonth, comparisonDevices, selectedDeviceId, band }: Props) {
+  // האם המחיר בגרפים "עלות יציאה מוקדמת" ו"השוואת עלות סיום ההתקשרות" כולל
+  // את רכישת המכשיר עצמו (E בנוסחה) או רק את חוב המכשיר שנותר לחודשים
+  // שנשארו. ברירת מחדל: מסומן = כולל רכישה = "שומר את המכשיר". state יחיד
+  // ומשותף בין שני הגרפים - הצ'קבוקס שמופיע פעמיים קורא/כותב לאותו משתנה.
+  const [includeBuyout, setIncludeBuyout] = useState(true);
+
+  const currentDevice = comparisonDevices.find((d) => d.id === selectedDeviceId) ?? comparisonDevices[0];
+
+  const buyoutToggle = (
+    <label className="flex w-fit cursor-pointer items-center gap-2 text-sm text-slate-700">
+      <input
+        type="checkbox"
+        checked={includeBuyout}
+        onChange={(e) => setIncludeBuyout(e.target.checked)}
+        className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+      />
+      המחיר כולל רכישת המכשיר בסיום ההתקשרות
+    </label>
+  );
+
   // כמה מהמכסה החודשית (band.employeeContribution) נוצלה בפועל:
   // - officeUsed: מה שהמשרד בפועל שילם (מוגבל למכסה)
   // - employeeExcess: אם המכשיר עולה יותר מהמכסה - מה שהעובד משלם מכיסו מעבר לה
@@ -93,9 +125,19 @@ export default function Charts({ chartData, selectedMonth, comparisonDevices, se
     );
   };
 
-  // עלות כוללת נטו לעובד (אחרי הנחת הדרגה), לא מחיר גולמי של המכשיר - ראו
-  // הערה על calculateTotal24Months ב-buildComparisonDevices.
-  const totalCost = (d: Device) => calculateTotal24Months(d, band);
+  // סדרת "עלות יציאה מוקדמת" ל-24 החודשים, לפי המכשיר הנבחר בפועל -
+  // מחושבת כאן (ולא נלקחת מ-chartData) כדי שתגיב ל-includeBuyout בזמן אמת.
+  const exitCostSeries = currentDevice
+    ? Array.from({ length: 24 }, (_, idx) => {
+        const month = idx + 1;
+        return { month, exitCost: calculateExitCostAt(currentDevice, month, includeBuyout) };
+      })
+    : [];
+
+  // עלות סיום ההתקשרות היום (בחודש שנבחר בסליידר), לפי אותו includeBuyout -
+  // "שומר את המכשיר" (כולל E) מול "מחזיר את המכשיר" (רק חוב המכשיר שנותר).
+  // לא תלוי בדרגה/הנחה - ראו ההערה על calculateExitCostAt.
+  const totalCost = (d: Device) => calculateExitCostAt(d, selectedMonth, includeBuyout);
   const totals = comparisonDevices.map(totalCost);
   const minTotal = Math.min(...totals);
   const maxTotal = Math.max(...totals);
@@ -165,15 +207,19 @@ export default function Charts({ chartData, selectedMonth, comparisonDevices, se
         </ResponsiveContainer>
       </ChartPanel>
 
-      <ChartPanel title="עלות יציאה מוקדמת לפי חודש">
+      <ChartPanel
+        title="עלות סיום ההתקשרות לפי חודש"
+        subtitle="כמה עולה לסיים את ההתקשרות בכל חודש, לפי הבחירה למטה"
+        controls={buyoutToggle}
+      >
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData}>
+          <BarChart data={exitCostSeries}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
             <XAxis dataKey="month" stroke="#64748b" fontSize={12} />
             <YAxis stroke="#64748b" fontSize={12} />
             <Tooltip formatter={(v: number) => money(v)} />
-            <Bar dataKey="exitCost" name="עלות יציאה" radius={[6, 6, 0, 0]}>
-              {chartData.map((entry, index) => (
+            <Bar dataKey="exitCost" name="עלות סיום ההתקשרות" radius={[6, 6, 0, 0]}>
+              {exitCostSeries.map((entry, index) => (
                 <Cell key={index} fill={entry.month === selectedMonth ? COLOR_EXIT_ACTIVE : COLOR_EXIT} />
               ))}
             </Bar>
@@ -182,8 +228,9 @@ export default function Charts({ chartData, selectedMonth, comparisonDevices, se
       </ChartPanel>
 
       <ChartPanel
-        title="השוואת עלות כוללת ל-24 חודשים"
-        subtitle="עלות נטו בפועל לעובד לפי הדרגה שלו, לא מחיר גולמי של המכשיר"
+        title="השוואת עלות סיום ההתקשרות היום"
+        subtitle="לפי החודש הנבחר למעלה והבחירה למטה, מחיר גולמי (לא תלוי בדרגה)"
+        controls={buyoutToggle}
       >
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={comparisonData}>
