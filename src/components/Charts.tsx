@@ -76,7 +76,7 @@ export default function Charts({ chartData, selectedMonth, comparisonDevices, se
         onChange={(e) => setIncludeBuyout(e.target.checked)}
         className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
       />
-      המחיר כולל רכישת המכשיר בסיום ההתקשרות
+      מחיר כולל רכישת המכשיר בסוף ההתקשרות
     </label>
   );
 
