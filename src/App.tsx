@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import SelectionPage from './pages/SelectionPage';
 import DashboardPage from './pages/DashboardPage';
+import ShareButton from './components/ShareButton';
 import type { DashboardSelection, Device, GradeBand, GradeLookupTable, GradeType } from './types';
 import { loadDevices, loadGradeBands, loadGradeLookup } from './services/data';
 import { resolveGradeBand } from './services/calculations';
@@ -95,25 +96,28 @@ export default function App() {
 
   if (page === 'selection') {
     return (
-      <SelectionPage
-        devices={devices}
-        selectedDeviceId={selection.selectedDeviceId}
-        selectedGradeType={selection.selectedGradeType}
-        selectedRank={selection.selectedRank}
-        gradeTypes={gradeTypes}
-        ranks={ranks}
-        bandLabel={selectedBand?.label ?? '\u2013'}
-        bandContribution={selectedBand?.employeeContribution ?? 0}
-        onDeviceChange={(value) => setSelection((current) => ({ ...current, selectedDeviceId: value }))}
-        onGradeTypeChange={(value) => setSelection((current) => ({ ...current, selectedGradeType: value }))}
-        onRankChange={(value) => setSelection((current) => ({ ...current, selectedRank: value }))}
-        onContinue={() => setPage('dashboard')}
-        canContinue={canContinue}
-        loading={loading}
-        loadError={loadError}
-        showDisclaimer={!disclaimerDismissed}
-        onDismissDisclaimer={() => setDisclaimerDismissed(true)}
-      />
+      <>
+        <SelectionPage
+          devices={devices}
+          selectedDeviceId={selection.selectedDeviceId}
+          selectedGradeType={selection.selectedGradeType}
+          selectedRank={selection.selectedRank}
+          gradeTypes={gradeTypes}
+          ranks={ranks}
+          bandLabel={selectedBand?.label ?? '\u2013'}
+          bandContribution={selectedBand?.employeeContribution ?? 0}
+          onDeviceChange={(value) => setSelection((current) => ({ ...current, selectedDeviceId: value }))}
+          onGradeTypeChange={(value) => setSelection((current) => ({ ...current, selectedGradeType: value }))}
+          onRankChange={(value) => setSelection((current) => ({ ...current, selectedRank: value }))}
+          onContinue={() => setPage('dashboard')}
+          canContinue={canContinue}
+          loading={loading}
+          loadError={loadError}
+          showDisclaimer={!disclaimerDismissed}
+          onDismissDisclaimer={() => setDisclaimerDismissed(true)}
+        />
+        <ShareButton />
+      </>
     );
   }
 
@@ -134,16 +138,19 @@ export default function App() {
   }
 
   return (
-    <DashboardPage
-      device={selectedDevice}
-      band={selectedBand}
-      selectedMonth={selection.selectedMonth}
-      selectedRank={selection.selectedRank}
-      selectedGradeType={selection.selectedGradeType}
-      devices={devices}
-      onBack={() => setPage('selection')}
-      onMonthChange={(value) => setSelection((current) => ({ ...current, selectedMonth: value }))}
-      onResetMonth={() => setSelection((current) => ({ ...current, selectedMonth: 12 }))}
-    />
+    <>
+      <DashboardPage
+        device={selectedDevice}
+        band={selectedBand}
+        selectedMonth={selection.selectedMonth}
+        selectedRank={selection.selectedRank}
+        selectedGradeType={selection.selectedGradeType}
+        devices={devices}
+        onBack={() => setPage('selection')}
+        onMonthChange={(value) => setSelection((current) => ({ ...current, selectedMonth: value }))}
+        onResetMonth={() => setSelection((current) => ({ ...current, selectedMonth: 12 }))}
+      />
+      <ShareButton />
+    </>
   );
 }
