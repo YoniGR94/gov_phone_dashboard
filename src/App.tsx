@@ -10,7 +10,7 @@ import { resolveGradeBand } from './services/calculations';
 const defaultSelection: DashboardSelection = {
   selectedDeviceId: '',
   selectedGradeType: 'מח"ר / מהנדסים',
-  selectedRank: '42',
+  selectedRank: '41',
   selectedMonth: 12,
 };
 
