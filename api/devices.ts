@@ -15,7 +15,7 @@ const SHEET_ID = process.env.DEVICES_SHEET_ID ?? '13HhcspJ_P0jnCmdz7icVeKQJCGWdu
 const SHEET_GID = process.env.DEVICES_SHEET_GID ?? '1768756835';
 const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
 
-const EXCLUDED_NOTE = 'הוצא מרשימת הדגמים לבחירה';
+const EXCLUDED_NOTE = 'יצא מרשימת הדגמים';
 
 /**
  * Parses a shekel-formatted cell ("₪1,234", "1234", etc).
