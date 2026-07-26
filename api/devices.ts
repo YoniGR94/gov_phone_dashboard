@@ -15,7 +15,13 @@ const SHEET_ID = process.env.DEVICES_SHEET_ID ?? '13HhcspJ_P0jnCmdz7icVeKQJCGWdu
 const SHEET_GID = process.env.DEVICES_SHEET_GID ?? '1768756835';
 const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
 
-const EXCLUDED_NOTE = 'יצא מרשימת הדגמים';
+// The sheet's wording for "removed from the model list" has drifted over time
+// - it currently reads "הוצא מרשימת הדגמים לבחירה" but used to read
+// "יצא מרשימת הדגמים" (different verb form, so the old exact substring no
+// longer matches at all - that's what silently stopped the discontinued
+// badge from showing). Matching against several known variants means a
+// future small rewording in the sheet is less likely to break this again.
+const EXCLUDED_NOTE_PATTERNS = ['הוצא מרשימת הדגמים', 'יצא מרשימת הדגמים'];
 
 /**
  * Parses a shekel-formatted cell ("₪1,234", "1234", etc).
@@ -139,7 +145,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           // Matches by substring, not exact equality - the sheet's note
           // text isn't always byte-for-byte identical (e.g. extra words
           // before/after, trailing punctuation).
-          discontinued: (row['הערות'] ?? '').includes(EXCLUDED_NOTE),
+          discontinued: EXCLUDED_NOTE_PATTERNS.some((pattern) => (row['הערות'] ?? '').includes(pattern)),
         };
       })
       .filter((device): device is NonNullable<typeof device> => device !== null);
