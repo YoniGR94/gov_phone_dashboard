@@ -2,7 +2,7 @@
 
 מחשבון עלויות אינטראקטיבי לעובדי מדינה בתוכנית הליסינג לטלפון סלולרי — בוחרים דרגה ומכשיר, ומקבלים את העלות החודשית והכוללת בפועל.
 
-🔗 **[לאתר החי](https://gov-phone-dashboard.vercel.app/)**
+🔗 **[למחשבון](https://gov-phone-dashboard.vercel.app/)**
 
 <img src="docs/screenshot.png" width="600"/>
 
@@ -32,6 +32,8 @@ npm install
 npm run dev
 ```
 
+> ⚠️ **הערה:** `npm run dev` מריץ רק את Vite, בלי את פונקציית השרת של Vercel (`/api/devices`) — כך שרשימת המכשירים לא תיטען מקומית ותוצג "חסרים נתונים". להרצה מלאה עם נתוני המכשירים החיים, יש להתקין את [Vercel CLI](https://vercel.com/docs/cli) (`npm i -g vercel`) ולהריץ `vercel dev` במקום `npm run dev`.
+> 
 ## שלבי השימוש
 
 ### שלב 1 — בחירת דרגה ומכשיר
