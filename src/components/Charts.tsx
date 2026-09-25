@@ -17,6 +17,7 @@ import {
 
 import type { ChartPoint, Device, GradeBand } from '../types';
 import { calculateExitCostAt, money } from '../services/calculations';
+import InfoTooltip from './InfoTooltip';
 
 type Props = {
   chartData: ChartPoint[];
@@ -39,16 +40,19 @@ const COLOR_UNUSED = '#cbd5e1'; // slate-300 - "בזבוז" של מכסה שלא
 function ChartPanel({
   title,
   subtitle,
+  tooltip,
   controls,
   children,
 }: {
   title: string;
   subtitle?: string;
+  tooltip?: string;
   controls?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
-    <div className="glass-card p-4">
+    <div className="glass-card overflow-visible p-4">
+      {tooltip && <InfoTooltip text={tooltip} />}
       <h3 className="font-display text-base font-semibold text-slate-900">{title}</h3>
       {subtitle && <p className="mt-0.5 text-xs text-slate-500">{subtitle}</p>}
       {controls && <div className="mt-2">{controls}</div>}
@@ -166,7 +170,11 @@ export default function Charts({ chartData, selectedMonth, comparisonDevices, se
 
   return (
     <div className="grid gap-4 xl:grid-cols-2">
-      <ChartPanel title="ניצול מכסת ההשתתפות החודשית" subtitle={utilizationSubtitle}>
+      <ChartPanel
+        title="ניצול מכסת ההשתתפות החודשית"
+        subtitle={utilizationSubtitle}
+        tooltip="מציג כיצד מתחלקת מכסת ההשתתפות החודשית של המשרד עבור המכשיר הנבחר: כמה מהמכסה שילם בפועל המשרד (ירוק), האם העובד משלם תוספת מכיסו כשהמכשיר עולה יותר מהמכסה (סגול), והאם נשאר חלק מהמכסה שלא נוצל (אפור)."
+      >
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={utilizationData}
@@ -188,7 +196,10 @@ export default function Charts({ chartData, selectedMonth, comparisonDevices, se
         </ResponsiveContainer>
       </ChartPanel>
 
-      <ChartPanel title="עלות מצטברת לעובד לאורך הזמן">
+      <ChartPanel
+        title="עלות מצטברת לעובד לאורך הזמן"
+        tooltip="מציג את סכום התשלומים שהעובד צפוי לשלם מכיסו, מצטבר חודש אחר חודש, על פני כל 24 חודשי הליסינג. הנקודה האדומה מסמנת את החודש שנבחר בסליידר שמעל הגרפים."
+      >
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -210,6 +221,7 @@ export default function Charts({ chartData, selectedMonth, comparisonDevices, se
       <ChartPanel
         title="עלות סיום ההתקשרות לפי חודש"
         subtitle="כמה עולה לסיים את ההתקשרות בכל חודש, לפי הבחירה למטה"
+        tooltip="מציג כמה יעלה לסיים את ההתקשרות בכל אחד מ-24 חודשי הליסינג, לפי המכשיר הנבחר. הסכום כולל את חוב המכשיר שנותר לתשלום, ובהתאם לתיבת הסימון - גם את עלות רכישתו. העלות יורדת עם הזמן ככל שהחוב נפרע. העמודה האדומה מסמנת את החודש הנבחר כעת."
         controls={buyoutToggle}
       >
         <ResponsiveContainer width="100%" height="100%">
@@ -230,6 +242,7 @@ export default function Charts({ chartData, selectedMonth, comparisonDevices, se
       <ChartPanel
         title="השוואת עלות סיום ההתקשרות היום"
         subtitle="לפי החודש הנבחר למעלה והבחירה למטה, מחיר גולמי (לא תלוי בדרגה)"
+        tooltip="משווה, לפי החודש הנבחר בסליידר, את עלות סיום ההתקשרות של המכשיר הנבחר לעומת מכשירים אחרים באותו מסלול/דרגה. המכשיר הנבחר מסומן בכחול, הזול ביותר בירוק והיקר ביותר באדום. המחיר גולמי בלבד ואינו תלוי במדרגת ההשתתפות של המשרד."
         controls={buyoutToggle}
       >
         <ResponsiveContainer width="100%" height="100%">

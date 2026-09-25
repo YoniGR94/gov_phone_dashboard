@@ -24,8 +24,22 @@ import * as XLSX from 'xlsx';
  * Override via the DEVICES_FILE_ID env var if the source file moves again
  * (Project Settings -> Environment Variables), without touching code.
  */
+<<<<<<< HEAD
 const FILE_ID = process.env.DEVICES_FILE_ID ?? '1uwxmXBBy6Dz3F8U_Pr5ON49zXZI68o-V';
 const FILE_DOWNLOAD_URL = `https://drive.google.com/uc?export=download&id=${FILE_ID}`;
+=======
+const SHEET_ID = process.env.DEVICES_SHEET_ID ?? '13HhcspJ_P0jnCmdz7icVeKQJCGWdur5vJ0wWfM5Wu_I';
+const SHEET_GID = process.env.DEVICES_SHEET_GID ?? '1768756835';
+const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
+
+// The sheet's wording for "removed from the model list" has drifted over time
+// - it currently reads "הוצא מרשימת הדגמים לבחירה" but used to read
+// "יצא מרשימת הדגמים" (different verb form, so the old exact substring no
+// longer matches at all - that's what silently stopped the discontinued
+// badge from showing). Matching against several known variants means a
+// future small rewording in the sheet is less likely to break this again.
+const EXCLUDED_NOTE_PATTERNS = ['הוצא מרשימת הדגמים', 'יצא מרשימת הדגמים'];
+>>>>>>> 79f942225c258465d5c6e051c78882392399948c
 
 /**
  * SECOND CHANGE, same source update: discontinued devices used to live in
@@ -209,8 +223,52 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const workbook = XLSX.read(arrayBuffer, { type: 'array', cellDates: true });
 
     const skipped: string[] = [];
+<<<<<<< HEAD
     const activeRows = parseDeviceSheet(workbook, ACTIVE_SHEET_NAME, false, skipped);
     const discontinuedRows = parseDeviceSheet(workbook, DISCONTINUED_SHEET_NAME, true, skipped);
+=======
+
+    const devices = records
+      .filter((row) => row['יצרן'] && row['דגם מכשיר'])
+      .map((row) => {
+        const manufacturer = row['יצרן'].trim();
+        const model = row['דגם מכשיר'].trim();
+
+        const memoryGb = parseMemoryGb(row['נפח זיכרון (GB)']);
+        const leaseMonthly = parseShekel(row['עלות ליסינג חודשית, כולל מע"מ']);
+        const buyoutEnd = parseShekel(row['עלות רכישת מכשיר בסוף תקופה, כולל מע"מ']);
+        const weightedListPrice = parseShekel(row['מחיר מחירון משוקלל, כולל מע"מ']);
+
+        // Any of these being unparseable means we don't actually know the
+        // real numbers for this device - showing it with a silent "0" would
+        // be worse than not showing it at all in a cost calculator.
+        if (memoryGb === null || leaseMonthly === null || buyoutEnd === null || weightedListPrice === null) {
+          skipped.push(`${manufacturer} ${model}`);
+          return null;
+        }
+
+        return {
+          id: nextId(slugify(manufacturer, model, memoryGb)),
+          manufacturer,
+          model,
+          memoryGb,
+          leaseMonthly,
+          buyoutEnd,
+          weightedListPrice,
+          priceTier: (row['שיוך מכשיר למדרגת מחיר לחישוב השתתפות עצמית'] ?? '').trim(),
+          updatedAt: (row['תאריך עדכון אחרון והפסקת מכירה'] ?? '').trim() || undefined,
+          notes: (row['הערות'] ?? '').trim() || undefined,
+          // Still shown in the selector (so employees who already have this
+          // device, or want to compare against it, can pick it) - just
+          // flagged so the UI can mark it as no longer purchasable.
+          // Matches by substring, not exact equality - the sheet's note
+          // text isn't always byte-for-byte identical (e.g. extra words
+          // before/after, trailing punctuation).
+          discontinued: EXCLUDED_NOTE_PATTERNS.some((pattern) => (row['הערות'] ?? '').includes(pattern)),
+        };
+      })
+      .filter((device): device is NonNullable<typeof device> => device !== null);
+>>>>>>> 79f942225c258465d5c6e051c78882392399948c
 
     if (skipped.length > 0) {
       console.error('Skipped rows with invalid/missing pricing data:', skipped);

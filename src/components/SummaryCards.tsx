@@ -2,6 +2,7 @@ import type { LucideIcon } from 'lucide-react';
 import { Wallet, Landmark, PackageCheck, TrendingUp, LogOut, PiggyBank } from 'lucide-react';
 
 import { money } from '../services/calculations';
+import InfoTooltip from './InfoTooltip';
 
 type Props = {
   employeeMonthly: number;
@@ -29,16 +30,19 @@ function Card({
   subtitle,
   icon: Icon,
   tone,
+  tooltip,
 }: {
   title: string;
   value: string;
   subtitle: string;
   icon: LucideIcon;
   tone: Tone;
+  tooltip?: string;
 }) {
   const styles = TONE_STYLES[tone];
   return (
-    <div className={`glass-card ring-1 ${styles.ring} p-4`}>
+    <div className={`glass-card overflow-visible ring-1 ${styles.ring} p-4`}>
+      {tooltip && <InfoTooltip text={tooltip} />}
       <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${styles.icon}`}>
         <Icon className="h-5 w-5" strokeWidth={2.25} />
       </div>
@@ -79,6 +83,7 @@ export default function SummaryCards({
         subtitle="בחודש ה-24"
         icon={PackageCheck}
         tone="violet"
+        tooltip="בסוף 24 חודשי הליסינג ניתן, לא בהכרח בחובה, לרכוש את המכשיר בעלות שיורית זו במקום להחזיר אותו. זהו הסכום שמופיע גם בגרפים כ'עלות סיום ההתקשרות' בחודש ה-24, כשמסומנת האפשרות 'כולל רכישה'."
       />
       <Card
         title="עלות מצטברת לעובד"
@@ -93,6 +98,7 @@ export default function SummaryCards({
         subtitle="סימולציית סיום מוקדם כעת"
         icon={LogOut}
         tone="rose"
+        tooltip="כמה יעלה לסיים את ההתקשרות מוקדם, אילו הייתם עוזבים בחודש שנבחר בסליידר שמעל הגרפים. הסכום כולל את חוב המכשיר שנותר, ולפי בחירת ברירת המחדל - גם את עלות רכישתו."
       />
       <Card
         title="חסכתם עד כה"
@@ -100,6 +106,7 @@ export default function SummaryCards({
         subtitle="השתתפות המשרד שכבר נוצלה עד החודש הנבחר"
         icon={PiggyBank}
         tone="amber"
+        tooltip="הסכום המצטבר ששילם המשרד מתוך מכסת ההשתתפות שלו, עד לחודש הנבחר בסליידר - כלומר כמה נחסך לעובד לעומת מצב שבו היה משלם את מלוא עלות הליסינג מכיסו."
       />
     </div>
   );
